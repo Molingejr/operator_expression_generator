@@ -1,0 +1,483 @@
+# File name: main.py
+
+import sys
+from PyQt5.QtWidgets import *
+from PyQt5 import QtCore
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from operators import *
+from create_func_const import CreateFuncConst
+import grid
+import intermediate
+import window
+import ui_dragAt
+
+__author__ = 'Molinge'
+
+
+class DragAt(QDialog):
+    """
+    This class inherit from QDialog and creates a dialog by using an object of
+    class Ui_Dialog from module ui_dragAt
+    """
+    def __init__(self, parent=None, text_from='', text_into=''):
+        super(DragAt, self).__init__(parent)
+        self.ui = ui_dragAt.Ui_Dialog()
+        self.ui.setupUi(self)
+        self.ui.radioButton.setChecked(True)
+        self.ui.lineEdit_2.setText(text_from)
+        self.ui.lineEdit.setText(text_into)
+
+
+class OpExpGen(QMainWindow):
+    """"
+    This class inherit from QMainWindow and instantiates the Main Window of
+    our GUI by creating an object of class Ui_MainWindow from ui_operator_expression_gen_update
+    file and calling its setupUi file to create the GUI.
+    This class also provides functions used to manipulate the GUI's contents.
+    """
+
+    def __init__(self, parent=None):
+        """ This constructor instantiate the GUI and call other functions in action
+            It also defined some of our basic data structures used in the backend.
+        """
+        # QWidget.__init__(self, parent)
+        super(OpExpGen, self).__init__(parent)
+        self.ui = window.Ui_MainWindow()
+        self.ui.setupUi(self)
+        self.setWindowIcon(QIcon(':/icon.png'))
+        self.center()
+
+        # This initializes our message box to be used through out the gui
+        self.msg = QMessageBox()
+        self.msg.setIcon(QMessageBox.Warning)
+        self.msg.setWindowTitle("Invalid Input")
+
+        self.app_grid = grid.Grid()    # This contains our Grid data structure
+        self.inter_grid = intermediate.IntermediateGrid()
+        for _ in range(5):
+            self.inter_grid.add_row()
+            self.inter_grid.add_column()
+
+        self.dragAt = DragAt(self)     # This represents a QDialog popup gui to be used in composition and substitution
+
+        # This defines our dictionary for storing functions and their attributes
+        self.defined_functions = {}
+
+        # They call associated functions when certain push buttons are clicked
+        self.ui.pushButton_save.clicked.connect(self.save_func)
+        self.ui.pushButton_clear.clicked.connect(self.default_palette)
+        self.ui.pushButton_delete_row.clicked.connect(self.remove_row)
+        self.ui.pushButton_delete_column.clicked.connect(self.remove_column)
+        self.ui.pushButton_delete_cell.clicked.connect(self.clear_cell)
+
+        # They call associated functions when certain menu actions are triggered
+        self.ui.action_New.triggered.connect(self.file_new)
+        self.ui.action_Open.triggered.connect(self.file_open)
+        self.ui.action_Save.triggered.connect(self.file_save)
+        self.ui.action_SaveAs.triggered.connect(self.file_save_as)
+        self.ui.action_Exit.triggered.connect(self.close)
+        self.ui.actionAbout_Software.triggered.connect(self.about)
+
+        # This enables the event filter at the application function and intermediate result table
+        self.ui.tableWidget_func.viewport().installEventFilter(self)
+        self.ui.tableWidget_inter.viewport().installEventFilter(self)
+
+        self.ui.radioButton_add.setChecked(True)  # sets the default check button to radio button add
+        self.ui.lineEdit_2.setValidator(QIntValidator())  # restrict input to Integers
+
+        # This fragment below handles what happens to the GUI upon startup
+        # like maintaining the previous state of the GUI
+        settings = QSettings()
+        self.restoreGeometry(settings.value("OpExpGen/Geometry", QByteArray()))
+        self.restoreState(settings.value("OpExpGen/State", QByteArray()))
+        QTimer.singleShot(0, self.loadInitialFile)
+        self.setWindowTitle("Operator and Expression Generation")
+
+    def eventFilter(self, source, event):
+        """
+        This handles when an event is being executed and then calls a function that process or
+        handle the operation [outcome]. Some events like drop and mouse events are filtered and handled.
+        """
+        try:
+            # handles drop evnent for tableWidget_fun i.e. application palette's grid
+            if (event.type() == QtCore.QEvent.Drop) and \
+                    (source is self.ui.tableWidget_func.viewport()):
+                self.ui.tableWidget_func.dropEvent(event)
+                self.calculate(self.ui.tableWidget_func, self.ui.tableWidget_func.list[0],
+                               self.ui.tableWidget_func.list[1])
+                self.ui.tableWidget_func.list.clear()
+                if event.isAccepted():
+                    print('eventFilter')
+                return True
+            # handles drop evnent for tableWidget_inter i.e. intermediate palette's grid
+            elif (event.type() == QtCore.QEvent.Drop) and \
+                 (source is self.ui.tableWidget_inter.viewport()):
+                self.ui.tableWidget_inter.list.clear()
+                self.ui.tableWidget_inter.dropEvent(event)
+
+                if self.inter_grid.get_data(self.ui.tableWidget_inter.list[1][0],
+                                            self.ui.tableWidget_inter.list[1][1]) is not None:
+                    self.calculate(self.ui.tableWidget_inter, self.ui.tableWidget_inter.list[0],
+                                   self.ui.tableWidget_inter.list[1])
+                else:
+                    self.inter_grid.set_data(self.ui.tableWidget_inter.text_from.text(),
+                                             self.ui.tableWidget_inter.list[1][0],
+                                             self.ui.tableWidget_inter.list[1][1])
+                    self.update_inter_table()
+                self.ui.tableWidget_inter.list.clear()
+                return True
+
+            # handles double click event on tableWidget_fun i.e. application palette's grid
+            elif (event.type() == QMouseEvent.MouseButtonDblClick) and \
+                    (source is self.ui.tableWidget_func.viewport()):
+                self.ui.tableWidget_func.mouseDoubleClickEvent(event)
+                r = self.ui.tableWidget_func.double_cliked_item[0]
+                c = self.ui.tableWidget_func.double_cliked_item[1]
+                print(self.app_grid.get_item(r, c))
+
+            return QMainWindow.eventFilter(self, source, event)
+
+        except AttributeError:
+            self.msg.setText("You can only drop in another function")
+            self.msg.exec_()
+            return True
+
+        except window.LocationException:
+            self.msg.setText("Cannot drop there")
+            self.msg.exec_()
+            return True
+
+    def calculate(self, table, text_from_pos, text_into_pos):
+        """This function does the calculation and test which operation has been chosen [i.e. 
+        when radio button has been checked] before carryout the evaluation.
+        It also stores the expression in the dictionary of artifacts.
+        """
+        """
+        Under review:  --- There for testing
+        if table.item(text_from_row, text_into_column) is not None:
+            item = table.item(text_from_row, text_into_column).text()
+        else:
+            item = None
+        """
+
+        arithmetic = Arithmetic()
+        algebraic = Algebraic()
+        trigonometric = Trigonometric()         # <--------- Not yet used ---------
+
+        text_from = table.text_from.text()
+        text_into = table.text_into.text()
+
+        # This checks the button clicked and generates the expression
+        if self.ui.radioButton_add.isChecked():
+            item = arithmetic.add(text_from, text_into)
+        elif self.ui.radioButton_substract.isChecked():
+            item = arithmetic.substract(text_from, text_into)
+        elif self.ui.radioButton_multiply.isChecked():
+            item = arithmetic.multiply(text_from, text_into)
+        elif self.ui.radioButton_divide.isChecked():
+            item = arithmetic.divide(text_from, text_into)
+        elif self.ui.radioButton_subs.isChecked():
+            # This pop-up another dialog and checks which checkbox has been checked
+            # It first sets the text in the dialog i.e. the two functions
+            self.dragAt.ui.lineEdit_2.setText(text_from)
+            self.dragAt.ui.lineEdit.setText(text_into)
+            if self.dragAt.exec_():
+                if self.dragAt.ui.radioButton.isChecked():
+                    if text_into.find('y1') != -1:
+                        item = algebraic.substitute(text_from, text_into, 1)
+                    else:
+                        item = None
+                        self.msg.setText("Cannot do substitution with constant")
+                        self.msg.exec_()
+                elif self.dragAt.ui.radioButton_2.isChecked():
+                    if text_into.find('y2') == -1:
+                        item = None
+                        self.msg.setText("Argument 2 doesn't exist")
+                        self.msg.exec_()
+                    else:
+                        item = algebraic.substitute(text_from, text_into, 2)
+                elif self.dragAt.ui.radioButton_3.isChecked():
+                    if (text_into.find('y1') != -1) and (text_into.find('y2') != -1):
+                        item = algebraic.substitute(text_from, text_into)
+                    elif text_into.find('y1') != -1:
+                        item = algebraic.substitute(text_from, text_into)
+                    else:
+                        item = None
+                        self.msg.setText("Cannot do substitution with constant")
+                        self.msg.exec_()
+        elif self.ui.radioButton_comp.isChecked():
+            self.dragAt.ui.lineEdit_2.setText(text_from)
+            self.dragAt.ui.lineEdit.setText(text_into)
+            if self.dragAt.exec_():
+                if self.dragAt.ui.radioButton.isChecked():
+                    item = algebraic.compose(text_from, text_into, 1)
+                    if item is None:
+                        self.msg.setText("Cannot use a constant to compose")
+                        self.msg.exec_()
+                    elif item is False:
+                        item = None
+                        self.msg.setText("Argument 1 does not exist")
+                        self.msg.exec_()
+                elif self.dragAt.ui.radioButton_2.isChecked():
+                    item = algebraic.compose(text_from, text_into, 2)
+                    if item is None:
+                        self.msg.setText("Cannot use a constant to compose")
+                        self.msg.exec_()
+                    elif item is False:
+                        item = None
+                        self.msg.setText("Argument 2 does not exist")
+                        self.msg.exec_()
+                elif self.dragAt.ui.radioButton_3.isChecked():
+                    item = algebraic.compose(text_from, text_into)
+                    if item is None:
+                        self.msg.setText("Cannot use constant to compose")
+                        self.msg.exec_()
+                        # item = algebraic.compose(text_from, text_into)
+        # print(item)
+        if item is None:
+            return False
+        if table is self.ui.tableWidget_func:
+            # This does the storing of the expression in the output table
+            self.app_grid.add_item(item, text_from_pos[0], text_into_pos[1])
+            self.updateTable()
+            self.inter_grid.add_data(item)
+            self.update_inter_table()
+        elif table is self.ui.tableWidget_inter:
+            # This does the storing of the expression in the intermediate table
+            self.inter_grid.set_data(item, text_into_pos[0], text_into_pos[1])
+            self.update_inter_table()
+
+    def save_func(self):
+        """ 
+            This function is called when the pushButton_save is clicked.
+            It does some testing ensuring that all the fields in the save pallet
+            are filled and in it's right combination.
+            It then updates the output table and the available function table
+        """
+
+        # This code snipes does the testing and assertions
+        if self.ui.lineEdit.text() == '':
+            self.msg.setText("Function/Constant name cannot be left empty")
+            self.msg.exec_()
+        elif self.ui.comboBox_1.currentText() == 'Constant' and (int(self.ui.lineEdit_2.text()) > 0):
+            self.msg.setText("A Constant cannot have an argument")
+            self.msg.exec_()
+        elif self.ui.comboBox_1.currentText() == 'Function' and (self.ui.lineEdit_2.text() == '0'):
+            self.msg.setText("A Function must have an argument")
+            self.msg.exec_()
+
+        else:
+            func_name = self.ui.lineEdit.text()
+            func_type = self.ui.comboBox_1.currentText()
+            num_args = int(self.ui.lineEdit_2.text())
+            section = self.ui.comboBox_3.currentText()
+
+            func = CreateFuncConst()
+            func.set_name(func_name)
+            func.set_type(func_type)
+            func.set_args(num_args)
+            print()
+            func.set_section(section)
+            func.create_function()
+
+            # This code snipe uses a temporal dictionary to check if the function to be created
+            # has the same name and exact number of altributes exist and prevent it from being
+            # created
+
+            temp_dict = dict()
+            temp_dict[func_name] = [type, num_args, section]
+
+            # checks if function exist already
+            if func_name in self.defined_functions:
+                if temp_dict[func_name][1] == self.defined_functions[func_name][1]:
+                    self.msg.setText("Function already exist")
+                    self.msg.exec_()
+                    return
+
+            self.defined_functions[func_name] = [type, num_args, section]  # update dictionary
+
+            # This code snipe saves the function name in the application of functions/constant table and appends
+            # its number of argument in a string form to let the user know the amount of arguments
+            # It checks and ensures each function or constant is saved in their respective row or column
+            if self.defined_functions[func_name][2] == 'Vertical':
+                self.app_grid.add_row(func.get_function())
+            elif self.defined_functions[func_name][2] == 'Horizontal':
+                self.app_grid.add_column(func.get_function())
+            self.updateTable()
+
+    def default_palette(self):
+        """ This sets the create function/constant palette to its default"""
+        self.ui.lineEdit.clear()
+        self.ui.comboBox_1.setCurrentIndex(0)
+        self.ui.lineEdit_2.clear()
+        self.ui.comboBox_3.setCurrentIndex(0)
+
+    def remove_row(self):
+        """
+        This function checks the current activated row and deletes it.
+        It prevents the first row from being deleted
+        """
+        r = self.ui.tableWidget_func.currentRow()
+        if r == 0:
+            pass
+        elif r == -1:
+            return False
+        else:
+            self.app_grid.delete_row(r)
+        self.updateTable()
+
+    def remove_column(self):
+        """
+        This function checks the current activated column and deletes it.
+        It prevents the first column from being deleted
+        """
+        c = self.ui.tableWidget_func.currentColumn()
+        if c == 0:
+            pass
+        elif c == -1:
+            return False
+        else:
+            self.app_grid.delete_column(c)
+        self.updateTable()
+
+    def clear_cell(self):
+        """This handles the delete of cell contents"""
+        r = self.ui.tableWidget_func.currentRow()
+        c = self.ui.tableWidget_func.currentColumn()
+        if r == 0 or c == 0:
+            pass
+        elif (r == -1) and (c == -1):
+            return False
+        else:
+            self.app_grid.clear_item_contents(r, c)
+        self.updateTable()
+
+    def closeEvent(self, event):
+        """This function handles when a user clicks the exit button"""
+        if self.okToContinue():
+            settings = QSettings()
+            settings.setValue("LastFile", self.app_grid.filename())
+            settings.setValue("OpExpGen/Geometry", self.saveGeometry())
+            settings.setValue("OpExpGen/State", self.saveState())
+        else:
+            event.ignore()
+
+    def okToContinue(self):
+        """ Prompt the user with a dialog during exist"""
+        if self.app_grid.isDirty():
+            reply = QMessageBox.question(self,
+                                         "My Grid - Unsaved Changes",
+                                         "Save unsaved changes?",
+                                         QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
+            if reply == QMessageBox.Cancel:
+                return False
+            elif reply == QMessageBox.Yes:
+                return self.fileSave()
+        return True
+
+    def loadInitialFile(self):
+        settings = QSettings()
+        filename = settings.value("LastFile")
+        if filename and QFile.exists(filename):
+            ok, msg = self.app_grid.load(filename)
+            self.statusBar().showMessage(msg, 5000)
+        self.updateTable()
+
+    def center(self):
+        """This function centralises the widget"""
+        screen = QDesktopWidget().screenGeometry()
+        size = self.geometry()
+        self.move((screen.width() - size.width()) / 2, (screen.height() - size.height()) / 2)
+
+    def about(self):
+        QMessageBox.about(self.msg, "Operator and Expression Generator",
+                          "Software Version 1.0\n"
+                          "This is a simple application of functions\n"
+                          "Generating Operators and Expressions\n"
+                          "It was built using Qt5 and PyQt5\n"
+                          "All rights reserved to the author.")
+
+    def updateTable(self):
+        self.ui.tableWidget_func.clear()
+        self.ui.tableWidget_func.setRowCount(len(self.app_grid))
+        self.ui.tableWidget_func.setColumnCount(len(self.app_grid.get_grid()[0]))
+
+        for row_num, row in enumerate(self.app_grid.get_grid()):
+            for column_num, data in enumerate(row):
+                if data == '->':
+                    item = QTableWidgetItem()
+                    icon = QIcon()
+                    icon.addPixmap(QPixmap(":/arrow.svg"), QIcon.Normal, QIcon.On)
+                    item.setIcon(icon)
+                    item.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
+                    self.ui.tableWidget_func.setItem(0, 0, item)
+                else:
+                    if type(data) is list and (len(data) == 0):
+                        item = QTableWidgetItem(None)
+                    elif type(data) is list and (len(data) > 0):
+                        item = QTableWidgetItem(data[0])
+                    else:
+                        item = QTableWidgetItem(data)
+                    self.ui.tableWidget_func.setItem(row_num, column_num, item)
+        self.setWindowTitle("Operator and Expression Generator {}".format(self.app_grid.filename()))
+        self.app_grid.display_grid()
+        print()
+
+    def update_inter_table(self):
+        self.ui.tableWidget_inter.clear()
+        self.ui.tableWidget_inter.setRowCount(len(self.inter_grid))
+        self.ui.tableWidget_inter.setColumnCount(len(self.inter_grid.get_grid()[0]))
+        for row_num, row in enumerate(self.inter_grid.get_grid()):
+            for column_num, data in enumerate(row):
+                item = QTableWidgetItem(data)
+                self.ui.tableWidget_inter.setItem(row_num, column_num, item)
+        print(self.inter_grid.get_grid(), '\n')
+
+    def file_new(self):
+        if not self.okToContinue():
+            return
+        self.app_grid.clear()
+        self.statusBar().clearMessage()
+        self.updateTable()
+
+    def file_open(self):
+        if not self.okToContinue():
+            return
+        path = (QFileInfo(self.app_grid.filename()).path()
+                if self.app_grid.filename() else ".")
+        filename = QFileDialog.getOpenFileName(self, "My Grid - Load Grid Data", path,
+                                               "My Grid data files ({})".format(self.app_grid.formats()))
+        if filename:
+            ok, msg = self.app_grid.load(filename[0])
+            self.statusBar().showMessage(msg, 5000)
+            self.updateTable()
+
+    def file_save(self):
+        if not self.app_grid.filename():
+            return self.fileSaveAs()
+        else:
+            ok, msg = self.app_grid.save()
+            self.statusBar().showMessage(msg, 5000)
+            return ok
+
+    def file_save_as(self):
+        filename = (self.app_grid.filename() if self.app_grid.filename() else ".")
+        filename = QFileDialog.getSaveFileName(self, "My Grid - Save Grid Data", filename,
+                                               "My Grid data files ({})".format(self.app_grid.formats()))
+        if filename:
+            if '.' not in filename[0]:
+                filename = filename[0] + ".mpb"
+            ok, msg = self.app_grid.save(filename)
+            self.statusBar().showMessage(msg, 5000)
+            return ok
+        return False
+
+
+# This code snipes is ran when the user runs the code.
+# It instantiate our Application and make our Main Window visible
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    form = OpExpGen()
+    form.show()
+    sys.exit(app.exec_())
