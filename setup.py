@@ -1,7 +1,7 @@
 from distutils.core import setup
 
 setup(
-    name='OperatorExpGen',
+    name='operator_expression_generator',
     version='1.0',
     packages=[''],
     url='',

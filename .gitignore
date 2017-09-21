@@ -5,3 +5,6 @@
 
 # ignore all files in .idea directory
 .idea/
+
+# ignore all .xml files
+*.xml
