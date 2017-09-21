@@ -1,5 +1,12 @@
 # File name: create_func_const.py
+
+"""
+This module contains classes responsible for creating functions and constants
+on the GUI or Text application.
+"""
+
 __author__ = 'Molinge'
+
 
 
 class CreateFuncConst:

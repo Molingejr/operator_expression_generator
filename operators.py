@@ -9,16 +9,20 @@ class Arithmetic:
     """
     This class handles all the arithmetic manipulations
     """
-    def add(self, func1, func2):
+    @staticmethod
+    def add(func1, func2):
         return '(' + func1 + '+' + func2 + ')'
 
-    def substract(self, func1, func2):
+    @staticmethod
+    def substract(func1, func2):
         return '(' + func1 + '-' + func2 + ')'
 
-    def multiply(self, func1, func2):
+    @staticmethod
+    def multiply(func1, func2):
         return '(' + func1 + '*' + func2 + ')'
 
-    def divide(self, func1, func2):
+    @staticmethod
+    def divide(func1, func2):
         return '(' + func1 + '/' + func2 + ')'
 
 
@@ -26,7 +30,8 @@ class Algebraic:
     """
     This class handles all the algebraic manipulations
     """
-    def compose(self, func1, func2, arg=None):
+    @staticmethod
+    def compose(func1, func2, arg=None):
         """This applies the second function into the first function"""
         if func1.find('x1') == -1:
             return None
@@ -47,7 +52,8 @@ class Algebraic:
             string2 = func2[obj2.start():obj2.end()]
             return func2.replace(string2, '{0}o{1}'.format(func1, string2))
 
-    def substitute(self, func1, func2, arg=None):
+    @staticmethod
+    def substitute(func1, func2, arg=None):
         """This replaces the second function's specified argument(s) with the first function"""
 
         try:
@@ -80,13 +86,16 @@ class Trigonometric:
     This class handles all the trigonometric function manipulation
     """
 
-    def cos(self, func):
+    @staticmethod
+    def cos(func):
         return 'cos({})'.format(func)
 
-    def sin(self, func):
+    @staticmethod
+    def sin(func):
         return 'sin({})'.format(func)
 
-    def tan(self, func):
+    @staticmethod
+    def tan(func):
         return 'tan({})'.format(func)
 
 
@@ -110,7 +119,7 @@ class Operators:
 
     def set_chosen_op(self, op_type, instance):
         if op_type in self._operators:
-            if instance in self._operators[type]:
+            if instance in self._operators[op_type]:
                 self._chosen_op = instance
 
     def get_operators(self):

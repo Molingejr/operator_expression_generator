@@ -1,0 +1,7 @@
+# Created by .ignore support plugin (hsz.mobi)
+
+# ignore all compiled files
+*.pyc
+
+# ignore all files in .idea directory
+.idea/

@@ -239,6 +239,10 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
+        """
+        This function takes our MainWindow class and set the texts for all its components
+        that requires a visible text on the GUI
+        """
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.groupBox_operators.setTitle(_translate("MainWindow", "Operators"))

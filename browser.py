@@ -1,5 +1,8 @@
- 
-import PyQt5
+# FileName: browser.py
+"""
+This module is responsible for displaying the user manual on a browser.
+It contains classes responsible for managing and displaying the browser.
+"""
 from PyQt5.QtCore import QUrl 
 from PyQt5.QtWidgets import QApplication, QWidget 
 from PyQt5.QtWebKitWidgets import QWebView, QWebPage
@@ -15,8 +18,12 @@ class MyBrowser(QWebPage):
     def userAgentForUrl(self, url):
         """ Returns a User Agent that will be seen by the website. """
         return "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36"
- 
+
+
 class Browser(QWebView):
+    """
+    Controls and run the browser.
+    """
     def __init__(self):
         # QWebView
         self.view = QWebView.__init__(self)
@@ -34,8 +41,7 @@ class Browser(QWebView):
     def disableJS(self):
         settings = QWebSettings.globalSettings()
         settings.setAttribute(QWebSettings.JavascriptEnabled, False)
- 
- 
+
  
 app = QApplication(sys.argv) 
 view = Browser()

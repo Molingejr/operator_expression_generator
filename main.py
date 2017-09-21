@@ -1,4 +1,15 @@
 # File name: main.py
+"""
+This module contains classes responsible for our GUI.
+It uses other modules in order to run our GUI.
+It is the main module of the GUI project.
+It contains the DragAt dialog class for our pop-up dialog when a drag is
+performed.
+It contains OpExGen Main Window class for controlling, managing and running
+the GUI. 
+It gives users a high degree of control and manipulation and abstracting the backend
+functions from users.
+"""
 
 import sys
 from PyQt5.QtWidgets import *
@@ -110,7 +121,7 @@ class OpExpGen(QMainWindow):
                 if event.isAccepted():
                     print('eventFilter')
                 return True
-            # handles drop evnent for tableWidget_inter i.e. intermediate palette's grid
+            # handles drop event for tableWidget_inter i.e. intermediate palette's grid
             elif (event.type() == QtCore.QEvent.Drop) and \
                  (source is self.ui.tableWidget_inter.viewport()):
                 self.ui.tableWidget_inter.list.clear()
@@ -138,11 +149,15 @@ class OpExpGen(QMainWindow):
 
             return QMainWindow.eventFilter(self, source, event)
 
+        # This handles when a drop action is performed inside the grid area but
+        # outside of any function i.e. areas where functions hasn't been defined yet
         except AttributeError:
             self.msg.setText("You can only drop in another function")
             self.msg.exec_()
             return True
 
+        # This handles when a drop action is performed on a intersection layer of outputs
+        # on the grid
         except window.LocationException:
             self.msg.setText("Cannot drop there")
             self.msg.exec_()
@@ -234,7 +249,6 @@ class OpExpGen(QMainWindow):
                         self.msg.setText("Cannot use constant to compose")
                         self.msg.exec_()
                         # item = algebraic.compose(text_from, text_into)
-        # print(item)
         if item is None:
             return False
         if table is self.ui.tableWidget_func:
@@ -268,16 +282,18 @@ class OpExpGen(QMainWindow):
             self.msg.exec_()
 
         else:
+            # This code segment collects info from the create function/constant palette
             func_name = self.ui.lineEdit.text()
             func_type = self.ui.comboBox_1.currentText()
             num_args = int(self.ui.lineEdit_2.text())
             section = self.ui.comboBox_3.currentText()
 
+            # Here we create an object of CreateFuncConst class and set it's
+            # values to those collected in the above segment.
             func = CreateFuncConst()
             func.set_name(func_name)
             func.set_type(func_type)
             func.set_args(num_args)
-            print()
             func.set_section(section)
             func.create_function()
 
@@ -286,7 +302,7 @@ class OpExpGen(QMainWindow):
             # created
 
             temp_dict = dict()
-            temp_dict[func_name] = [type, num_args, section]
+            temp_dict[func_name] = [func_type, num_args, section]
 
             # checks if function exist already
             if func_name in self.defined_functions:
@@ -295,7 +311,7 @@ class OpExpGen(QMainWindow):
                     self.msg.exec_()
                     return
 
-            self.defined_functions[func_name] = [type, num_args, section]  # update dictionary
+            self.defined_functions[func_name] = [func_type, num_args, section]  # update dictionary
 
             # This code snipe saves the function name in the application of functions/constant table and appends
             # its number of argument in a string form to let the user know the amount of arguments
@@ -367,7 +383,7 @@ class OpExpGen(QMainWindow):
         """ Prompt the user with a dialog during exist"""
         if self.app_grid.isDirty():
             reply = QMessageBox.question(self,
-                                         "My Grid - Unsaved Changes",
+                                         "Unsaved Changes",
                                          "Save unsaved changes?",
                                          QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
             if reply == QMessageBox.Cancel:
@@ -377,6 +393,10 @@ class OpExpGen(QMainWindow):
         return True
 
     def loadInitialFile(self):
+        """
+        This function is responsible for loading our previous settings and files that
+        where lastly opened files reloaded into our grid.
+        """
         settings = QSettings()
         filename = settings.value("LastFile")
         if filename and QFile.exists(filename):
@@ -391,6 +411,7 @@ class OpExpGen(QMainWindow):
         self.move((screen.width() - size.width()) / 2, (screen.height() - size.height()) / 2)
 
     def about(self):
+        """This function displays a message box containing info about the software."""
         QMessageBox.about(self.msg, "Operator and Expression Generator",
                           "Software Version 1.0\n"
                           "This is a simple application of functions\n"
@@ -399,10 +420,20 @@ class OpExpGen(QMainWindow):
                           "All rights reserved to the author.")
 
     def updateTable(self):
+        """
+        This function updates our grid each time changes are being made.
+        It does so by loading the updated contents of our internal grid [class Grid's object]
+        into the grid represented on the GUI.
+        """
+
+        # This code segment clear our GUI grid and set its row and column count to that
+        # of our class Grid's object.
         self.ui.tableWidget_func.clear()
         self.ui.tableWidget_func.setRowCount(len(self.app_grid))
         self.ui.tableWidget_func.setColumnCount(len(self.app_grid.get_grid()[0]))
 
+        # This code segment iterates through our Grid object and load each of its content
+        # into the grid on our GUI
         for row_num, row in enumerate(self.app_grid.get_grid()):
             for column_num, data in enumerate(row):
                 if data == '->':
@@ -420,11 +451,14 @@ class OpExpGen(QMainWindow):
                     else:
                         item = QTableWidgetItem(data)
                     self.ui.tableWidget_func.setItem(row_num, column_num, item)
+        # This sets the main windows title and appending the name of the file containing the
+        # Grid object
         self.setWindowTitle("Operator and Expression Generator {}".format(self.app_grid.filename()))
-        self.app_grid.display_grid()
+        self.app_grid.display_grid()    # This displays our grid on the terminal
         print()
 
     def update_inter_table(self):
+        """This function is responsible for updating our intermediate result grid"""
         self.ui.tableWidget_inter.clear()
         self.ui.tableWidget_inter.setRowCount(len(self.inter_grid))
         self.ui.tableWidget_inter.setColumnCount(len(self.inter_grid.get_grid()[0]))
@@ -435,13 +469,21 @@ class OpExpGen(QMainWindow):
         print(self.inter_grid.get_grid(), '\n')
 
     def file_new(self):
+        """This updates clears the contents of our Grid object and calls the corresponding
+        update functions of our GUI grids to clear their contents"""
         if not self.okToContinue():
             return
         self.app_grid.clear()
         self.statusBar().clearMessage()
         self.updateTable()
+        self.update_inter_table()
 
     def file_open(self):
+        """
+        This function is responsible for opening a grid file and loading it's contents
+        into our GUI grid. It displays a file dialog allowing the user to chose his/her file
+        which is then loaded into our Grid object and the GUI grid as well.
+        """
         if not self.okToContinue():
             return
         path = (QFileInfo(self.app_grid.filename()).path()
@@ -454,6 +496,11 @@ class OpExpGen(QMainWindow):
             self.updateTable()
 
     def file_save(self):
+        """
+        This function saves the contents of our Grid object into a file.
+        If the file doesn't exist yet it calls the fileSaveAs function to save the new file
+        else if it exist already, it just overwrite its contents
+        """
         if not self.app_grid.filename():
             return self.fileSaveAs()
         else:
@@ -462,6 +509,10 @@ class OpExpGen(QMainWindow):
             return ok
 
     def file_save_as(self):
+        """
+        This function saves the Grid object into a file name given by the user. The file
+        format is .mpb
+        """
         filename = (self.app_grid.filename() if self.app_grid.filename() else ".")
         filename = QFileDialog.getSaveFileName(self, "My Grid - Save Grid Data", filename,
                                                "My Grid data files ({})".format(self.app_grid.formats()))
