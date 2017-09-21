@@ -1,6 +1,11 @@
 # File name: grid.py
 # This contains our application of functions Grid data structure
 
+"""
+This module is responsible for the main grid on the GUI/Text app.
+It controls the grid responsible for applications of functions and generation of expressions.
+It contains classes that have methods for saving and loading our grid from a special file format.
+"""
 import pickle
 import gzip
 from PyQt5.QtCore import *

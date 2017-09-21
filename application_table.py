@@ -1,3 +1,11 @@
+# Filename: application_table.py
+
+"""
+This module contains classes responsible for controlling what happens on 
+the table(grid) on the GUI. The grid found in the Application of functions/constants
+All the events and errors that occurs on that grid are managed by this module.
+"""
+
 from PyQt5.QtWidgets import *
 from PyQt5 import QtGui
 
@@ -56,6 +64,8 @@ class Table(QTableWidget):
         print(self.list)
 
     def cellDoubleClicked(self, row: int, column: int):
+        """This saves the a cell's row and column that has been double clicked. 
+        It saves it in the double_cliked_item's attribute"""
         if row <= 0 or column <= 0:
             pass
         else:
