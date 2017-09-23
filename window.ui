@@ -288,9 +288,9 @@
      <property name="geometry">
       <rect>
        <x>470</x>
-       <y>80</y>
+       <y>60</y>
        <width>111</width>
-       <height>24</height>
+       <height>31</height>
       </rect>
      </property>
      <property name="layoutDirection">
@@ -307,10 +307,13 @@
      <property name="geometry">
       <rect>
        <x>470</x>
-       <y>110</y>
-       <width>112</width>
-       <height>24</height>
+       <y>100</y>
+       <width>111</width>
+       <height>31</height>
       </rect>
+     </property>
+     <property name="cursor">
+      <cursorShape>ArrowCursor</cursorShape>
      </property>
      <property name="text">
       <string>Delete column</string>
@@ -335,13 +338,42 @@
       <string>Del</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="pushButton_create">
+     <property name="geometry">
+      <rect>
+       <x>470</x>
+       <y>180</y>
+       <width>111</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Create Func/Const</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_2d">
+     <property name="geometry">
+      <rect>
+       <x>470</x>
+       <y>20</y>
+       <width>111</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="cursor">
+      <cursorShape>OpenHandCursor</cursorShape>
+     </property>
+     <property name="text">
+      <string>2D view of cell</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox_interResult">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>350</y>
-      <width>511</width>
+      <width>761</width>
       <height>221</height>
      </rect>
     </property>
@@ -353,7 +385,7 @@
       <rect>
        <x>10</x>
        <y>20</y>
-       <width>461</width>
+       <width>621</width>
        <height>192</height>
       </rect>
      </property>
@@ -385,110 +417,31 @@
      <column/>
      <column/>
     </widget>
-   </widget>
-   <widget class="QGroupBox" name="groupBox_createfunconst">
-    <property name="geometry">
-     <rect>
-      <x>520</x>
-      <y>350</y>
-      <width>251</width>
-      <height>221</height>
-     </rect>
-    </property>
-    <property name="title">
-     <string>Create Function/Constant</string>
-    </property>
-    <widget class="QWidget" name="layoutWidget">
+    <widget class="QPushButton" name="pushButton_del_inter_cell">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>640</x>
        <y>20</y>
-       <width>215</width>
-       <height>130</height>
+       <width>111</width>
+       <height>31</height>
       </rect>
      </property>
-     <layout class="QFormLayout" name="formLayout">
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="lineEdit"/>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_10">
-        <property name="text">
-         <string>Type</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QComboBox" name="comboBox_1">
-        <item>
-         <property name="text">
-          <string>Constant</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Function</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_6">
-        <property name="text">
-         <string>Number of args</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="label_8">
-        <property name="text">
-         <string>Section</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QComboBox" name="comboBox_3">
-        <item>
-         <property name="text">
-          <string>Vertical</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Horizontal</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QPushButton" name="pushButton_save">
-        <property name="text">
-         <string>Save</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1">
-       <widget class="QPushButton" name="pushButton_clear">
-        <property name="text">
-         <string>Clear</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>Input Name</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLineEdit" name="lineEdit_2">
-        <property name="inputMethodHints">
-         <set>Qt::ImhNone</set>
-        </property>
-       </widget>
-      </item>
-     </layout>
+     <property name="text">
+      <string>Delete cell</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_clear_inter_cell">
+     <property name="geometry">
+      <rect>
+       <x>640</x>
+       <y>60</y>
+       <width>111</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Clear all</string>
+     </property>
     </widget>
    </widget>
   </widget>
@@ -513,11 +466,20 @@
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
-     <string>Help</string>
+     <string>&amp;Help</string>
     </property>
     <addaction name="actionAbout_Software"/>
+    <addaction name="action_User_Manual"/>
+   </widget>
+   <widget class="QMenu" name="menu_Edit">
+    <property name="title">
+     <string>&amp;Edit</string>
+    </property>
+    <addaction name="actionUndo"/>
+    <addaction name="actionRedo"/>
    </widget>
    <addaction name="menuFile"/>
+   <addaction name="menu_Edit"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -590,9 +552,62 @@
     <string>&amp;SaveAs</string>
    </property>
   </action>
+  <action name="action_User_Manual">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/editzoom.png</normaloff>:/editzoom.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;User Manual</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+H</string>
+   </property>
+  </action>
+  <action name="actionUndo">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/undo.svg</normaloff>:/undo.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Undo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+U</string>
+   </property>
+  </action>
+  <action name="actionRedo">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/redo.svg</normaloff>:/redo.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Redo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="resources.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pushButton_clear_inter_cell</sender>
+   <signal>clicked()</signal>
+   <receiver>tableWidget_inter</receiver>
+   <slot>clearContents()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>705</x>
+     <y>444</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>330</x>
+     <y>484</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
