@@ -11,6 +11,8 @@
       <file alias="home.png">images/home.png</file>
       <file alias="icon.png">images/icon.png</file>
       <file alias="arrow.svg">images/arrow.svg</file>
+      <file alias="undo.svg">images/undo.svg</file>
+      <file alias="redo.svg">images/redo.svg</file>
   </qresource>
 
   <qresource>
