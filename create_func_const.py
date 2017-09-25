@@ -53,7 +53,7 @@ class CreateFuncConst:
                 self._function = self._name + '('
                 for num in range(self._args):
                     self._function += variable + str(num+1)
-                    if num < self._args:
+                    if num < (self._args - 1):
                         self._function += ','
                 self._function += ')'
             else:
