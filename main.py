@@ -17,6 +17,8 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from operators import *
+import ui_create_func_const_dialog
+import ui_2D_view
 from create_func_const import CreateFuncConst
 import grid
 import intermediate
@@ -32,12 +34,56 @@ class DragAt(QDialog):
     class Ui_Dialog from module ui_dragAt
     """
     def __init__(self, parent=None, text_from='', text_into=''):
+        """
+        Constructor initializes the Dialog using the setupUi method from Ui_Dialog
+        class found in ui_dragAt module.
+        """
         super(DragAt, self).__init__(parent)
         self.ui = ui_dragAt.Ui_Dialog()
         self.ui.setupUi(self)
         self.ui.radioButton.setChecked(True)
         self.ui.lineEdit_2.setText(text_from)
         self.ui.lineEdit.setText(text_into)
+
+
+class TwoDView(QDialog):
+    """
+    This class displays a dialog containing a 2D view of the expressions generated.
+    It also allows the user to delete an expression from that 2D view by deleting a row.
+    The user has the ability to cancel which undo any delete action done.
+    """
+    def __init__(self, parent=None):
+        """
+        Constructor initializes the Dialog using setupUi method from Ui_Dialog_2D class
+        found at the ui_2D_view module.
+        """
+        super(TwoDView, self).__init__(parent)
+        self.ui = ui_2D_view.Ui_Dialog_2D()
+        self.ui.setupUi(self)
+
+
+class CreateFuncConstDialog(QDialog):
+    """
+    This allows the user to create a function which updates the Creation of 
+    Function/Constant palette.
+    """
+    def __init__(self, parent=None):
+        """
+        Constructor initializes the Dialog using setupUi method from ui_Dialog_create_fc
+        class found at the ui_create_func_const_dialog.
+        """
+        super(CreateFuncConstDialog, self).__init__(parent)
+        self.ui = ui_create_func_const_dialog.Ui_Dialog_create_fc()
+        self.ui.setupUi(self)
+        self.ui.lineEdit_2.setValidator(QIntValidator())  # restrict input to Integers
+        self.ui.pushButton_clear.clicked.connect(self.default_palette)
+
+    def default_palette(self):
+        """ This sets the create function/constant palette to its default"""
+        self.ui.lineEdit.clear()
+        self.ui.comboBox_1.setCurrentIndex(0)
+        self.ui.lineEdit_2.clear()
+        self.ui.comboBox_2.setCurrentIndex(0)
 
 
 class OpExpGen(QMainWindow):
@@ -72,15 +118,23 @@ class OpExpGen(QMainWindow):
 
         self.dragAt = DragAt(self)     # This represents a QDialog popup gui to be used in composition and substitution
 
+        # This represents our pop-up dialog for creating functions/constants
+        self.create_func_const_dialog = CreateFuncConstDialog(self)
+
+        # This represents an object for displaying the cell's intersection in 2d
+        self.view_2d_cell = TwoDView(self)
+
         # This defines our dictionary for storing functions and their attributes
         self.defined_functions = {}
 
         # They call associated functions when certain push buttons are clicked
-        self.ui.pushButton_save.clicked.connect(self.save_func)
-        self.ui.pushButton_clear.clicked.connect(self.default_palette)
+        self.create_func_const_dialog.ui.pushButton_save.clicked.connect(self.save_func)
         self.ui.pushButton_delete_row.clicked.connect(self.remove_row)
         self.ui.pushButton_delete_column.clicked.connect(self.remove_column)
         self.ui.pushButton_delete_cell.clicked.connect(self.clear_cell)
+        self.ui.pushButton_create.clicked.connect(self.create_func_const_dialog.exec_)
+        self.ui.pushButton_2d.clicked.connect(self.display_2d)
+        self.ui.pushButton_del_inter_cell.clicked.connect(self.clear_inter_cell)
 
         # They call associated functions when certain menu actions are triggered
         self.ui.action_New.triggered.connect(self.file_new)
@@ -95,23 +149,32 @@ class OpExpGen(QMainWindow):
         self.ui.tableWidget_inter.viewport().installEventFilter(self)
 
         self.ui.radioButton_add.setChecked(True)  # sets the default check button to radio button add
-        self.ui.lineEdit_2.setValidator(QIntValidator())  # restrict input to Integers
 
         # This fragment below handles what happens to the GUI upon startup
         # like maintaining the previous state of the GUI
         settings = QSettings()
         self.restoreGeometry(settings.value("OpExpGen/Geometry", QByteArray()))
         self.restoreState(settings.value("OpExpGen/State", QByteArray()))
-        QTimer.singleShot(0, self.loadInitialFile)
+        QTimer.singleShot(0, self.load_initial_file)
         self.setWindowTitle("Operator and Expression Generation")
 
+    def closeEvent(self, event):
+        """This function handles when a user clicks the exit button"""
+        if self.ok_to_continue():
+            settings = QSettings()
+            settings.setValue("LastFile", self.app_grid.filename())
+            settings.setValue("OpExpGen/Geometry", self.saveGeometry())
+            settings.setValue("OpExpGen/State", self.saveState())
+        else:
+            event.ignore()
+    
     def eventFilter(self, source, event):
         """
         This handles when an event is being executed and then calls a function that process or
         handle the operation [outcome]. Some events like drop and mouse events are filtered and handled.
         """
         try:
-            # handles drop evnent for tableWidget_fun i.e. application palette's grid
+            # handles drop event for tableWidget_fun i.e. application palette's grid
             if (event.type() == QtCore.QEvent.Drop) and \
                     (source is self.ui.tableWidget_func.viewport()):
                 self.ui.tableWidget_func.dropEvent(event)
@@ -163,17 +226,27 @@ class OpExpGen(QMainWindow):
             self.msg.exec_()
             return True
 
+    def display_2d(self):
+        """This displays the cells[containing expressions] in 2d format"""
+        r = self.ui.tableWidget_func.currentRow()
+        c = self.ui.tableWidget_func.currentColumn()
+        if r == 0 or c == 0:
+            return False
+        elif (r == -1) and (c == -1):
+            return False
+
+        self.view_2d_cell.ui.tableWidget.clear()
+        self.view_2d_cell.ui.tableWidget.setRowCount(len(self.app_grid.get_item(r, c)))
+        self.view_2d_cell.ui.tableWidget.setColumnCount(1)
+        self.view_2d_cell.show()
+        for row_num, data in enumerate(self.app_grid.get_item(r, c)):
+            item = QTableWidgetItem(data)
+            self.view_2d_cell.ui.tableWidget.setItem(row_num, 0, item)
+
     def calculate(self, table, text_from_pos, text_into_pos):
         """This function does the calculation and test which operation has been chosen [i.e. 
         when radio button has been checked] before carryout the evaluation.
         It also stores the expression in the dictionary of artifacts.
-        """
-        """
-        Under review:  --- There for testing
-        if table.item(text_from_row, text_into_column) is not None:
-            item = table.item(text_from_row, text_into_column).text()
-        else:
-            item = None
         """
 
         arithmetic = Arithmetic()
@@ -254,7 +327,7 @@ class OpExpGen(QMainWindow):
         if table is self.ui.tableWidget_func:
             # This does the storing of the expression in the output table
             self.app_grid.add_item(item, text_from_pos[0], text_into_pos[1])
-            self.updateTable()
+            self.update_table()
             self.inter_grid.add_data(item)
             self.update_inter_table()
         elif table is self.ui.tableWidget_inter:
@@ -271,22 +344,24 @@ class OpExpGen(QMainWindow):
         """
 
         # This code snipes does the testing and assertions
-        if self.ui.lineEdit.text() == '':
+        if self.create_func_const_dialog.ui.lineEdit.text() == '':
             self.msg.setText("Function/Constant name cannot be left empty")
             self.msg.exec_()
-        elif self.ui.comboBox_1.currentText() == 'Constant' and (int(self.ui.lineEdit_2.text()) > 0):
+        elif self.create_func_const_dialog.ui.comboBox_1.currentText() == 'Constant' and \
+                (int(self.create_func_const_dialog.ui.lineEdit_2.text()) > 0):
             self.msg.setText("A Constant cannot have an argument")
             self.msg.exec_()
-        elif self.ui.comboBox_1.currentText() == 'Function' and (self.ui.lineEdit_2.text() == '0'):
+        elif self.create_func_const_dialog.ui.comboBox_1.currentText() == 'Function' and \
+                (self.create_func_const_dialog.ui.lineEdit_2.text() == '0'):
             self.msg.setText("A Function must have an argument")
             self.msg.exec_()
 
         else:
             # This code segment collects info from the create function/constant palette
-            func_name = self.ui.lineEdit.text()
-            func_type = self.ui.comboBox_1.currentText()
-            num_args = int(self.ui.lineEdit_2.text())
-            section = self.ui.comboBox_3.currentText()
+            func_name = self.create_func_const_dialog.ui.lineEdit.text()
+            func_type = self.create_func_const_dialog.ui.comboBox_1.currentText()
+            num_args = int(self.create_func_const_dialog.ui.lineEdit_2.text())
+            section = self.create_func_const_dialog.ui.comboBox_2.currentText()
 
             # Here we create an object of CreateFuncConst class and set it's
             # values to those collected in the above segment.
@@ -298,7 +373,7 @@ class OpExpGen(QMainWindow):
             func.create_function()
 
             # This code snipe uses a temporal dictionary to check if the function to be created
-            # has the same name and exact number of altributes exist and prevent it from being
+            # has the same name and exact number of attributes exist and prevent it from being
             # created
 
             temp_dict = dict()
@@ -320,14 +395,7 @@ class OpExpGen(QMainWindow):
                 self.app_grid.add_row(func.get_function())
             elif self.defined_functions[func_name][2] == 'Horizontal':
                 self.app_grid.add_column(func.get_function())
-            self.updateTable()
-
-    def default_palette(self):
-        """ This sets the create function/constant palette to its default"""
-        self.ui.lineEdit.clear()
-        self.ui.comboBox_1.setCurrentIndex(0)
-        self.ui.lineEdit_2.clear()
-        self.ui.comboBox_3.setCurrentIndex(0)
+            self.update_table()
 
     def remove_row(self):
         """
@@ -341,7 +409,7 @@ class OpExpGen(QMainWindow):
             return False
         else:
             self.app_grid.delete_row(r)
-        self.updateTable()
+        self.update_table()
 
     def remove_column(self):
         """
@@ -355,10 +423,10 @@ class OpExpGen(QMainWindow):
             return False
         else:
             self.app_grid.delete_column(c)
-        self.updateTable()
+        self.update_table()
 
     def clear_cell(self):
-        """This handles the delete of cell contents"""
+        """This handles the delete of cell contents in the application of functions grid"""
         r = self.ui.tableWidget_func.currentRow()
         c = self.ui.tableWidget_func.currentColumn()
         if r == 0 or c == 0:
@@ -367,19 +435,16 @@ class OpExpGen(QMainWindow):
             return False
         else:
             self.app_grid.clear_item_contents(r, c)
-        self.updateTable()
+        self.update_table()
 
-    def closeEvent(self, event):
-        """This function handles when a user clicks the exit button"""
-        if self.okToContinue():
-            settings = QSettings()
-            settings.setValue("LastFile", self.app_grid.filename())
-            settings.setValue("OpExpGen/Geometry", self.saveGeometry())
-            settings.setValue("OpExpGen/State", self.saveState())
-        else:
-            event.ignore()
+    def clear_inter_cell(self):
+        """This handles the delete of cell contents in the intermediate result grid"""
+        r = self.ui.tableWidget_inter.currentRow()
+        c = self.ui.tableWidget_inter.currentColumn()
+        self.inter_grid.delete_data(r, c)
+        self.update_inter_table()
 
-    def okToContinue(self):
+    def ok_to_continue(self):
         """ Prompt the user with a dialog during exist"""
         if self.app_grid.isDirty():
             reply = QMessageBox.question(self,
@@ -392,7 +457,7 @@ class OpExpGen(QMainWindow):
                 return self.fileSave()
         return True
 
-    def loadInitialFile(self):
+    def load_initial_file(self):
         """
         This function is responsible for loading our previous settings and files that
         where lastly opened files reloaded into our grid.
@@ -402,7 +467,7 @@ class OpExpGen(QMainWindow):
         if filename and QFile.exists(filename):
             ok, msg = self.app_grid.load(filename)
             self.statusBar().showMessage(msg, 5000)
-        self.updateTable()
+        self.update_table()
 
     def center(self):
         """This function centralises the widget"""
@@ -419,7 +484,7 @@ class OpExpGen(QMainWindow):
                           "It was built using Qt5 and PyQt5\n"
                           "All rights reserved to the author.")
 
-    def updateTable(self):
+    def update_table(self):
         """
         This function updates our grid each time changes are being made.
         It does so by loading the updated contents of our internal grid [class Grid's object]
@@ -471,11 +536,15 @@ class OpExpGen(QMainWindow):
     def file_new(self):
         """This updates clears the contents of our Grid object and calls the corresponding
         update functions of our GUI grids to clear their contents"""
-        if not self.okToContinue():
+        if not self.ok_to_continue():
             return
-        self.app_grid.clear()
+        self.app_grid.clear()  # clears grid to default
+        self.inter_grid.clear()  # clears grid to default
+        for _ in range(5):      # add rows and columns to grid
+            self.inter_grid.add_row()
+            self.inter_grid.add_column()
         self.statusBar().clearMessage()
-        self.updateTable()
+        self.update_table()
         self.update_inter_table()
 
     def file_open(self):
@@ -484,7 +553,7 @@ class OpExpGen(QMainWindow):
         into our GUI grid. It displays a file dialog allowing the user to chose his/her file
         which is then loaded into our Grid object and the GUI grid as well.
         """
-        if not self.okToContinue():
+        if not self.ok_to_continue():
             return
         path = (QFileInfo(self.app_grid.filename()).path()
                 if self.app_grid.filename() else ".")
@@ -493,7 +562,7 @@ class OpExpGen(QMainWindow):
         if filename:
             ok, msg = self.app_grid.load(filename[0])
             self.statusBar().showMessage(msg, 5000)
-            self.updateTable()
+            self.update_table()
 
     def file_save(self):
         """
