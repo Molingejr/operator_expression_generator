@@ -16,6 +16,10 @@ class IntermediateGrid:
         """This returns the length of our grid. i.e how many rows"""
         return len(self._grid)
 
+    def clear(self):
+        """Sets the grid to it's default format"""
+        self._grid = [[None]]
+
     def add_row(self):
         """This method adds a row at the end of the grid"""
         if len(self._grid) == 0 or len(self._grid[0]) == 1:
