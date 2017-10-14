@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(306, 182)
+        Dialog.resize(306, 108)
         self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
         self.buttonBox.setGeometry(QtCore.QRect(220, 20, 81, 241))
         self.buttonBox.setOrientation(QtCore.Qt.Vertical)
@@ -25,14 +25,8 @@ class Ui_Dialog(object):
         self.lineEdit.setReadOnly(True)
         self.lineEdit.setObjectName("lineEdit")
         self.label_2 = QtWidgets.QLabel(Dialog)
-        self.label_2.setGeometry(QtCore.QRect(0, 80, 161, 16))
+        self.label_2.setGeometry(QtCore.QRect(0, 80, 111, 21))
         self.label_2.setObjectName("label_2")
-        self.radioButton = QtWidgets.QRadioButton(Dialog)
-        self.radioButton.setGeometry(QtCore.QRect(10, 100, 102, 20))
-        self.radioButton.setObjectName("radioButton")
-        self.radioButton_2 = QtWidgets.QRadioButton(Dialog)
-        self.radioButton_2.setGeometry(QtCore.QRect(10, 120, 102, 20))
-        self.radioButton_2.setObjectName("radioButton_2")
         self.label_3 = QtWidgets.QLabel(Dialog)
         self.label_3.setGeometry(QtCore.QRect(0, 10, 71, 20))
         self.label_3.setObjectName("label_3")
@@ -40,9 +34,9 @@ class Ui_Dialog(object):
         self.lineEdit_2.setGeometry(QtCore.QRect(80, 10, 113, 22))
         self.lineEdit_2.setReadOnly(True)
         self.lineEdit_2.setObjectName("lineEdit_2")
-        self.radioButton_3 = QtWidgets.QRadioButton(Dialog)
-        self.radioButton_3.setGeometry(QtCore.QRect(10, 140, 121, 20))
-        self.radioButton_3.setObjectName("radioButton_3")
+        self.lineEdit_3 = QtWidgets.QLineEdit(Dialog)
+        self.lineEdit_3.setGeometry(QtCore.QRect(110, 80, 81, 20))
+        self.lineEdit_3.setObjectName("lineEdit_3")
 
         self.retranslateUi(Dialog)
         self.buttonBox.accepted.connect(Dialog.accept)
@@ -53,9 +47,6 @@ class Ui_Dialog(object):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Choose the arg to use"))
         self.label.setText(_translate("Dialog", "Function 2"))
-        self.label_2.setText(_translate("Dialog", "Choose Function 2 arg"))
-        self.radioButton.setText(_translate("Dialog", "1st arg"))
-        self.radioButton_2.setText(_translate("Dialog", "2nd arg"))
+        self.label_2.setText(_translate("Dialog", "Enter func2 arg"))
         self.label_3.setText(_translate("Dialog", "Function 1"))
-        self.radioButton_3.setText(_translate("Dialog", "Function itself"))
 
