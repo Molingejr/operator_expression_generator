@@ -36,49 +36,31 @@ class Algebraic:
         if func1.find('x1') == -1:
             return None
         if arg is None:
-            return '{0}o{1}'.format(func1, func2)
-        elif arg == 1:
-            regex1 = re.compile(r'[x y]1')
-            obj1 = re.search(regex1, func2)
-            if obj1 is None:
+            return '({0}o{1})'.format(func1, func2)
+        else:
+            regex = re.compile(r'[x y]{}'.format(arg))
+            obj = re.search(regex, func2)
+            if obj is None:
                 return False
-            string1 = func2[obj1.start():obj1.end()]
-            return func2.replace(string1, '{0}o{1}'.format(func1, string1))
-        elif arg == 2:
-            regex2 = re.compile(r'[x y]2')
-            obj2 = re.search(regex2, func2)
-            if obj2 is None:
-                return False
-            string2 = func2[obj2.start():obj2.end()]
-            return func2.replace(string2, '{0}o{1}'.format(func1, string2))
+            s = func2[obj.start():obj.end()]
+            return func2.replace(s, '{0}o{1}'.format(func1, s))
 
     @staticmethod
     def substitute(func1, func2, arg=None):
         """This replaces the second function's specified argument(s) with the first function"""
 
         try:
-            regex1 = re.compile(r'[x y]1')
-            obj1 = re.search(regex1, func2)
-            string1 = func2[obj1.start():obj1.end()]
-
-            regex2 = re.compile(r'[x y]2')
-            obj2 = re.search(regex2, func2)
-            string2 = func2[obj2.start():obj2.end()]
+            regex = re.compile(r'[x y]{}'.format(arg))
+            obj = re.search(regex, func2)
+            s = func2[obj.start():obj.end()]
 
         except AttributeError:
             pass
         finally:
-            if arg is None and (obj1 is not None):
-                func2 = func2.replace(string1, func1)
-                return func2.replace(string2, func1)
-            elif arg is None and (obj2 is None):
-                return func2.replace(string1, func1)
-            elif arg == 1:
-                return func2.replace(string1, func1)
-            elif arg == 2:
-                return func2.replace(string2, func1)
-            else:
+            if arg is None or (obj is None):
                 return None
+            else:
+                return func2.replace(s, func1)
 
 
 class Trigonometric:
