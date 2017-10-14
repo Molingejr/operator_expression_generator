@@ -1,4 +1,5 @@
 from tree import LinkedBinaryTree
+import re
 
 
 class ArithmeticExpressionTree(LinkedBinaryTree):
@@ -19,7 +20,7 @@ class ArithmeticExpressionTree(LinkedBinaryTree):
             raise TypeError('Token must be a string')
         self._add_root(token)                     # use inherited, nonpublic method
         if left is not None:                      # presumably three-parameter form
-            if token not in '+-*x/':
+            if token not in '+-*x/,':
                 raise ValueError('token must be valid operator')
             self._attach(self.root(), left, right)  # use inherited, nonpublic method
 
@@ -58,6 +59,8 @@ class ArithmeticExpressionTree(LinkedBinaryTree):
                 return left_val - right_val
             elif op == '/':
                 return left_val / right_val
+            elif op == ',':
+                return '{},{}'.format(left_val, right_val)
             else:                          # treat 'x' or '*' as multiplication
                 return left_val * right_val
 
@@ -68,7 +71,7 @@ def tokenize(raw):
     For example the string '(43-(3*10))' results in the list
     ['(', '43', '-', '(', '3', '*', '10', ')', ')']
     """
-    SYMBOLS = set('+-x*/() ')    # allow for '*' or 'x' for multiplication
+    SYMBOLS = set('+-x*/(), ')    # allow for '*' or 'x' for multiplication
 
     mark = 0
     tokens = []
@@ -96,20 +99,104 @@ def build_expression_tree(tokens):
         if t in '+-x*/':                              # t is an operator symbol
             S.append(t)                               # push the operator symbol
         elif t not in '()':                           # consider t to be a literal
-            S.append(ArithmeticExpressionTree(t))               # push trivial tree storing value
+            S.append(ArithmeticExpressionTree(t))     # push trivial tree storing value
         elif t == ')':                                # compose a new tree from three constituent parts
             right = S.pop()                           # right subtree as per LIFO
             op = S.pop()                              # operator symbol
             left = S.pop()                            # left subtree
-            S.append(ArithmeticExpressionTree(op, left, right)) # repush tree
+            S.append(ArithmeticExpressionTree(op, left, right))  # repush tree
         # we ignore a left parenthesis
     return S.pop()
 
 
+def build_algebraic_tree(tokens):
+    S = []
+    for t in tokens:
+        if t in ',':
+            S.append(t)
+        elif t not in '()':
+            S.append(ArithmeticExpressionTree(t))
+        elif t == ')':
+            right = S.pop()
+            op = S.pop()
+            left = S.pop()
+            assert isinstance(op, str)
+            S.append(ArithmeticExpressionTree(op, left, right))
+    return S.pop()
+
+
+def convert_expression(exp):
+    """
+    This function simply takes an expression and replaces the functions in it by their
+    names. It then stores the replacements done in a dictionary.
+    It finally returns the replacements dictionary and the new expression.
+    """
+    # This is to match a pattern like x1, y3
+    patt1 = re.compile('([x y]\d*,*)', re.IGNORECASE)
+
+    # This is to match a function e.g f(x1,x2)
+    patt2 = re.compile('((\w+\(([x y]\d*,*)+\))*,*)')
+
+    # This is to match patterns like g(f(x1,x2),y2)
+    regex = re.compile('\w+\(({}|{})+\)'.format(patt1.pattern, patt2.pattern))
+
+    new_exp = exp      # Keep a copy of exp for processing
+    replacements = dict()   # A dictionary containing the replacements done
+
+    # This fragment locate function pattern in an expression and replaces them with
+    # function's name
+    # It also stores the replacements done in the replacements dictionary
+    for match in re.finditer(regex, exp):
+        s = match.start()
+        e = match.end()
+        f_name = exp[s:e].split('(')[0]  # splits by '(', the function and takes only its name
+        new_exp = new_exp.replace(exp[s:e], f_name)
+        replacements[exp[s]] = exp[s:e]
+
+    return new_exp, replacements
+
+
+def expression_formats(exp, order):
+    """
+    Takes an expression in an infix order and transform it to another format.
+    It first replaces the functions by their name by calling convert_expression function
+    which returns new expression and the replacement dictionary.
+    It then build the expression tree by calling the build_expression_tree function.
+    It further creates a new expression in the desired format.
+    All the function names in this new format are replaced by their original function look
+    e.g add replaced with add(x1,x2).
+    """
+    expr, repl = convert_expression(exp)
+    new_exp = ''
+    exp_tree = build_expression_tree(tokenize(expr))
+
+    # Create new expression in the desired format
+    if order == 'inorder':
+        for c in exp_tree.inorder():
+            new_exp += c.element()
+    elif order == 'preorder':
+        for c in exp_tree.preorder():
+            new_exp += c.element()
+    elif order == 'postorder':
+        for c in exp_tree.postorder():
+            new_exp += c.element()
+
+    # replace the function's name with the function itselft
+    for k in repl.keys():
+        new_exp = new_exp.replace(k, repl[k])
+
+    return new_exp
+
+
 if __name__ == '__main__':
+    """
     big = build_expression_tree(tokenize('((((3+1)x3)/((9-5)+2))-((3x(7-4))+6))'))
     print(big, '=', big.evaluate())
     print('length =', len(big))
     print('Inorder traversal as follows: ')
     for i in big.inorder():
         print(i.element())
+    """
+    exp = '(f(g(x1,x2),y2)+(a-b))'
+    # print(convert_expression(exp))
+    print(expression_formats(exp, 'postorder'))

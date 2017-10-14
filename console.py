@@ -10,6 +10,7 @@ users a high degree of flexibility and control over the application.
 from operators import *
 from create_func_const import *
 from grid import Grid
+from expression_tree import *
 
 __author__ = 'Molinge'
 
@@ -30,10 +31,11 @@ class Console:
         This controls the Console application and use's most of the other static
         methods in order to do so.
         """
-        ops = ['', 'add', 'substract', 'multiply', 'divide', 'substitute', 'compose', 'cos', 'sin', 'tan']
+        ops = ['', 'add', 'subtract', 'multiply', 'divide', 'substitute', 'compose', 'cos', 'sin', 'tan']
+        operator = ops[1]   # default operator
 
         choice = self.menu()
-        while choice != 5:
+        while choice != 6:
             if choice == 1:
                 self.app_grid.display_grid()
             elif choice == 2:
@@ -53,14 +55,24 @@ class Console:
 
             elif choice == 4:
                 # Display the grid and get the two functions to apply from the user
-                func1 = input("Enter a function position from at vertical location on the grid: ")
-                func2 = input("Enter a function position from the horizontal location on the grid: ")
+                func1 = tuple(map(int, input("Enter a function position from at vertical location on the grid: ").
+                                  split()))
+                func2 = tuple(map(int, input("Enter a function position from the horizontal location on the grid: ").
+                                  split()))
+                print(func1, func2)
 
                 print("The resulting computation is as follows:")
-                item = self.calculate(operator, self.app_grid.get_item(func1),
-                                      self.app_grid.get_item(func2))
+                item = self.calculate(operator, self.app_grid.get_item(func1[0], func1[1]),
+                                      self.app_grid.get_item(func2[0], func2[1]))
                 self.app_grid.add_item(item, func1[0], func2[1])
 
+            elif choice == 5:
+                try:
+                    cord = tuple(map(int, input("Enter location of expression(3 digits): ").split()))
+                    exp = self.app_grid.get_item(cord[0], cord[1])[cord[2]]
+                    self.expression_notations(exp)
+                except IndexError as e:
+                    print(e)
             print()
             choice = self.menu()
 
@@ -95,6 +107,31 @@ class Console:
         return func
 
     @staticmethod
+    def expression_notations_choices():
+        print("\nWhich format do you want")
+        print("-----------------------------")
+        print("1. Infix notation")
+        print("2. Prefix notation")
+        print("3. Postfix(or reverse polish) notation")
+        choice = int(input("Enter choice: "))
+        return choice
+
+    def expression_notations(self, e):
+        try:
+            c = self.expression_notations_choices()
+            my_file = input("Enter name of text file to save: ")
+            file = open(my_file, "w")
+            if c == 1:
+                file.write(expression_formats(e, 'inorder'))
+            elif c == 2:
+                file.write(expression_formats(e, 'preorder'))
+            elif c == 3:
+                file.write(expression_formats(e, 'postorder'))
+            file.close()
+        except IOError as e:
+            print("File name doesn't exist")
+
+    @staticmethod
     def menu():
         """
         This displays the main menu of the console app.
@@ -106,7 +143,8 @@ class Console:
         print("2. Create Function/Constant")
         print("3. Choose operator")
         print("4. Perform calculation")
-        print("5. Exit\n")
+        print("5. Export expression ")
+        print("6. Exit\n")
         choice = int(input("Enter your choice: "))
         return choice
 
