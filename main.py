@@ -24,6 +24,8 @@ import grid
 import intermediate
 import window
 import ui_dragAt
+import ui_export_expression
+import expression_tree
 
 __author__ = 'Molinge'
 
@@ -41,9 +43,9 @@ class DragAt(QDialog):
         super(DragAt, self).__init__(parent)
         self.ui = ui_dragAt.Ui_Dialog()
         self.ui.setupUi(self)
-        self.ui.radioButton.setChecked(True)
         self.ui.lineEdit_2.setText(text_from)
         self.ui.lineEdit.setText(text_into)
+        self.ui.lineEdit_3.setValidator(QIntValidator())  # restrict input to Integers
 
 
 class TwoDView(QDialog):
@@ -86,6 +88,18 @@ class CreateFuncConstDialog(QDialog):
         self.ui.comboBox_2.setCurrentIndex(0)
 
 
+class ExportExpressionDialog(QDialog):
+    """
+    This dialog export an expression of user's desired format into an external
+    file of his/her choice.
+    """
+    def __init__(self, parent=None):
+        super(ExportExpressionDialog, self).__init__(parent)
+        self.ui = ui_export_expression.Ui_Dialog()
+        self.ui.setupUi(self)
+        # self.ui.pushButton_cancel.clicked.connect()
+
+
 class OpExpGen(QMainWindow):
     """"
     This class inherit from QMainWindow and instantiates the Main Window of
@@ -124,6 +138,9 @@ class OpExpGen(QMainWindow):
         # This represents an object for displaying the cell's intersection in 2d
         self.view_2d_cell = TwoDView(self)
 
+        # This represents an object for exporting expressions to a file
+        self.export_exp = ExportExpressionDialog(self)
+
         # This defines our dictionary for storing functions and their attributes
         self.defined_functions = {}
 
@@ -135,6 +152,7 @@ class OpExpGen(QMainWindow):
         self.ui.pushButton_create.clicked.connect(self.create_func_const_dialog.exec_)
         self.ui.pushButton_2d.clicked.connect(self.display_2d)
         self.ui.pushButton_del_inter_cell.clicked.connect(self.clear_inter_cell)
+        self.ui.pushButton_export_exp.clicked.connect(self.export_expression)
 
         # They call associated functions when certain menu actions are triggered
         self.ui.action_New.triggered.connect(self.file_new)
@@ -143,6 +161,7 @@ class OpExpGen(QMainWindow):
         self.ui.action_SaveAs.triggered.connect(self.file_save_as)
         self.ui.action_Exit.triggered.connect(self.close)
         self.ui.actionAbout_Software.triggered.connect(self.about)
+        # self.ui.action_User_Manual.triggered.connect(self.)
 
         # This enables the event filter at the application function and intermediate result table
         self.ui.tableWidget_func.viewport().installEventFilter(self)
@@ -243,6 +262,25 @@ class OpExpGen(QMainWindow):
             item = QTableWidgetItem(data)
             self.view_2d_cell.ui.tableWidget.setItem(row_num, 0, item)
 
+    def export_expression(self):
+        try:
+            r = self.ui.tableWidget_inter.currentRow()
+            c = self.ui.tableWidget_inter.currentColumn()
+            exp = self.inter_grid.get_data(r, c)
+            if self.export_exp.exec_():
+                my_file = self.export_exp.ui.lineEdit.text()
+                print(my_file)
+                file = open(my_file, "w")
+                if self.export_exp.ui.comboBox.currentIndex() == 0:
+                    file.write(expression_tree.expression_formats(exp, 'inorder'))
+                elif self.export_exp.ui.comboBox.currentIndex() == 1:
+                    file.write(expression_tree.expression_formats(exp, 'preorder'))
+                elif self.export_exp.ui.comboBox.currentIndex() == 2:
+                    file.write(expression_tree.expression_formats(exp, 'postorder'))
+                file.close()
+        except IOError as e:
+            print("File name doesn't exist")
+
     def calculate(self, table, text_from_pos, text_into_pos):
         """This function does the calculation and test which operation has been chosen [i.e. 
         when radio button has been checked] before carryout the evaluation.
@@ -271,57 +309,36 @@ class OpExpGen(QMainWindow):
             self.dragAt.ui.lineEdit_2.setText(text_from)
             self.dragAt.ui.lineEdit.setText(text_into)
             if self.dragAt.exec_():
-                if self.dragAt.ui.radioButton.isChecked():
-                    if text_into.find('y1') != -1:
-                        item = algebraic.substitute(text_from, text_into, 1)
-                    else:
-                        item = None
-                        self.msg.setText("Cannot do substitution with constant")
-                        self.msg.exec_()
-                elif self.dragAt.ui.radioButton_2.isChecked():
-                    if text_into.find('y2') == -1:
-                        item = None
-                        self.msg.setText("Argument 2 doesn't exist")
-                        self.msg.exec_()
-                    else:
-                        item = algebraic.substitute(text_from, text_into, 2)
-                elif self.dragAt.ui.radioButton_3.isChecked():
-                    if (text_into.find('y1') != -1) and (text_into.find('y2') != -1):
-                        item = algebraic.substitute(text_from, text_into)
-                    elif text_into.find('y1') != -1:
-                        item = algebraic.substitute(text_from, text_into)
-                    else:
-                        item = None
-                        self.msg.setText("Cannot do substitution with constant")
-                        self.msg.exec_()
+                if text_into.find('y1') == -1:
+                    item = None
+                    self.msg.setText("Cannot do substitution with constant")
+                    self.msg.exec_()
+                elif text_into.find(self.dragAt.ui.lineEdit_3.text()) == -1:
+                    item = None
+                    self.msg.setText("Argument {} doesn't exist".format(self.dragAt.ui.lineEdit_3.text()))
+                    self.msg.exec_()
+                else:
+                    item = algebraic.substitute(text_from, text_into, int(self.dragAt.ui.lineEdit_3.text()))
+
         elif self.ui.radioButton_comp.isChecked():
             self.dragAt.ui.lineEdit_2.setText(text_from)
             self.dragAt.ui.lineEdit.setText(text_into)
             if self.dragAt.exec_():
-                if self.dragAt.ui.radioButton.isChecked():
-                    item = algebraic.compose(text_from, text_into, 1)
-                    if item is None:
-                        self.msg.setText("Cannot use a constant to compose")
-                        self.msg.exec_()
-                    elif item is False:
-                        item = None
-                        self.msg.setText("Argument 1 does not exist")
-                        self.msg.exec_()
-                elif self.dragAt.ui.radioButton_2.isChecked():
-                    item = algebraic.compose(text_from, text_into, 2)
-                    if item is None:
-                        self.msg.setText("Cannot use a constant to compose")
-                        self.msg.exec_()
-                    elif item is False:
-                        item = None
-                        self.msg.setText("Argument 2 does not exist")
-                        self.msg.exec_()
-                elif self.dragAt.ui.radioButton_3.isChecked():
+                if self.dragAt.ui.lineEdit_3.text() == '0':
                     item = algebraic.compose(text_from, text_into)
                     if item is None:
                         self.msg.setText("Cannot use constant to compose")
                         self.msg.exec_()
                         # item = algebraic.compose(text_from, text_into)
+                else:
+                    item = algebraic.compose(text_from, text_into, self.dragAt.ui.lineEdit_3.text())
+                    if item is None:
+                        self.msg.setText("Cannot use a constant to compose")
+                        self.msg.exec_()
+                    elif item is False:
+                        item = None
+                        self.msg.setText("Argument doesn't exit")
+
         if item is None:
             return False
         if table is self.ui.tableWidget_func:
@@ -449,12 +466,12 @@ class OpExpGen(QMainWindow):
         if self.app_grid.isDirty():
             reply = QMessageBox.question(self,
                                          "Unsaved Changes",
-                                         "Save unsaved changes?",
+                                         "Do you want to save?",
                                          QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
             if reply == QMessageBox.Cancel:
                 return False
             elif reply == QMessageBox.Yes:
-                return self.fileSave()
+                return self.file_save()
         return True
 
     def load_initial_file(self):
