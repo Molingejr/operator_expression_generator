@@ -13,8 +13,16 @@ The development phases of this project is provided in other documents. This docu
 contains information about the coding phase of the project and probably along with its
 deployment.
 
-Alot of other documentations are found in each modules describing the modules and their
+Other documentations
+--------------------
+A lot of other documentations are found in each modules describing the modules and their
 appropriate classes along with their methods and other key code fragments.
+
+See docs directory for individual module documentations. Some links when click will show 404 error because they
+require the internet to be displayed.
+
+You can also use "pydoc -p 5000" to display an interactive web documentation on port 5000. Doesn't need the internet
+to function.
 
 Description
 -----------
