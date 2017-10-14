@@ -8,7 +8,6 @@ on the GUI or Text application.
 __author__ = 'Molinge'
 
 
-
 class CreateFuncConst:
     """
     This class provides methods for collecting data about a function and settings it's attributes.

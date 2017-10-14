@@ -46,5 +46,5 @@ class Browser(QWebView):
 app = QApplication(sys.argv) 
 view = Browser()
 view.showMaximized()
-view.load("https://pythonspot.com")
+view.load("http://localhost:63342/operator_expression_generator/help/index.html?_ijt=o22o8aohi9ecch6bipl40thag5")
 app.exec_()
