@@ -21,6 +21,9 @@ class CreateFuncConst:
         self._function = None
 
     def set_name(self, name):
+        if (not name.isalnum()) or (name[0].isnumeric()):
+            print("Invalid function name.")
+            return
         self._name = name
 
     def set_type(self, type):
@@ -37,6 +40,9 @@ class CreateFuncConst:
             return
 
     def create_function(self):
+        if self._name is None:
+            print("Function has no name or an invalid name")
+            return
         if self._type == 'Constant':
             if self._args == 0:
                 self._function = self._name
