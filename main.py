@@ -10,7 +10,7 @@ the GUI.
 It gives users a high degree of control and manipulation and abstracting the backend
 functions from users.
 """
-
+import os
 import sys
 from PyQt5.QtWidgets import *
 from PyQt5 import QtCore
@@ -26,6 +26,7 @@ import window
 import ui_dragAt
 import ui_export_expression
 import expression_tree
+import browser
 
 __author__ = 'Molinge'
 
@@ -62,6 +63,7 @@ class TwoDView(QDialog):
         super(TwoDView, self).__init__(parent)
         self.ui = ui_2D_view.Ui_Dialog_2D()
         self.ui.setupUi(self)
+        #self.ui.pushButton_del_row(self.del_row())
 
 
 class CreateFuncConstDialog(QDialog):
@@ -152,6 +154,7 @@ class OpExpGen(QMainWindow):
         self.ui.pushButton_create.clicked.connect(self.create_func_const_dialog.exec_)
         self.ui.pushButton_2d.clicked.connect(self.display_2d)
         self.ui.pushButton_del_inter_cell.clicked.connect(self.clear_inter_cell)
+        self.ui.pushButton_clear_inter_cell.clicked.connect(self.clear_inter_grid)
         self.ui.pushButton_export_exp.clicked.connect(self.export_expression)
 
         # They call associated functions when certain menu actions are triggered
@@ -161,7 +164,7 @@ class OpExpGen(QMainWindow):
         self.ui.action_SaveAs.triggered.connect(self.file_save_as)
         self.ui.action_Exit.triggered.connect(self.close)
         self.ui.actionAbout_Software.triggered.connect(self.about)
-        # self.ui.action_User_Manual.triggered.connect(self.)
+        self.ui.action_User_Manual.triggered.connect(self.manual)
 
         # This enables the event filter at the application function and intermediate result table
         self.ui.tableWidget_func.viewport().installEventFilter(self)
@@ -266,6 +269,8 @@ class OpExpGen(QMainWindow):
         try:
             r = self.ui.tableWidget_inter.currentRow()
             c = self.ui.tableWidget_inter.currentColumn()
+            if (r == -1) and (c == -1):
+                return False
             exp = self.inter_grid.get_data(r, c)
             if self.export_exp.exec_():
                 my_file = self.export_exp.ui.lineEdit.text()
@@ -294,6 +299,7 @@ class OpExpGen(QMainWindow):
         text_from = table.text_from.text()
         text_into = table.text_into.text()
 
+        item = None
         # This checks the button clicked and generates the expression
         if self.ui.radioButton_add.isChecked():
             item = arithmetic.add(text_from, text_into)
@@ -363,6 +369,10 @@ class OpExpGen(QMainWindow):
         # This code snipes does the testing and assertions
         if self.create_func_const_dialog.ui.lineEdit.text() == '':
             self.msg.setText("Function/Constant name cannot be left empty")
+            self.msg.exec_()
+        if (not self.create_func_const_dialog.ui.lineEdit.text().isalnum()) or \
+           (self.create_func_const_dialog.ui.lineEdit.text()[0].isnumeric()):
+            self.msg.setText("Function/Constant name is invalid")
             self.msg.exec_()
         elif self.create_func_const_dialog.ui.comboBox_1.currentText() == 'Constant' and \
                 (int(self.create_func_const_dialog.ui.lineEdit_2.text()) > 0):
@@ -461,6 +471,16 @@ class OpExpGen(QMainWindow):
         self.inter_grid.delete_data(r, c)
         self.update_inter_table()
 
+    def clear_inter_grid(self):
+        """
+        This clears all contents in intermediate grid
+        """
+        self.inter_grid.clear()
+        for _ in range(5):      # add rows and columns to grid
+            self.inter_grid.add_row()
+            self.inter_grid.add_column()
+        self.update_inter_table()
+
     def ok_to_continue(self):
         """ Prompt the user with a dialog during exist"""
         if self.app_grid.isDirty():
@@ -495,11 +515,17 @@ class OpExpGen(QMainWindow):
     def about(self):
         """This function displays a message box containing info about the software."""
         QMessageBox.about(self.msg, "Operator and Expression Generator",
-                          "Software Version 1.0\n"
-                          "This is a simple application of functions\n"
-                          "Generating Operators and Expressions\n"
-                          "It was built using Qt5 and PyQt5\n"
-                          "All rights reserved to the author.")
+                          "Software Version: 1.0\n\n"
+                          "Author: Molinge Lyonga Jr\n\n"
+                          "Description: This is a simple application of functions.\n"
+                          "It generates Operators and Expressions\n"
+                          "It was built using python3.5, Qt5 designer and PyQt5\n\n"
+                          "It is built for academic, personal and \ncommercial purposes.")
+
+    @staticmethod
+    def manual():
+        """This is to display the user manual in the browser module"""
+        pass
 
     def update_table(self):
         """
