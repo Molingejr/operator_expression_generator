@@ -27,9 +27,16 @@ class CreateFuncConst:
         self._name = name
 
     def set_type(self, type):
+        if type not in ['Constant', 'Function']:
+            print("Invalid type. It can either be a Constant or Function")
+            return
         self._type = type
 
     def set_args(self, args):
+        if (not isinstance(args, int)) or (args < 0):
+            print("Argument is either not an integer or less than 0.")
+            print("Only integers > 0 are accepted")
+            return
         self._args = args
 
     def set_section(self, section):
@@ -50,7 +57,7 @@ class CreateFuncConst:
                 print("Cannot create a constant with arguments")
                 return
         else:
-            if self._args > 0:
+            if self._args >= 0:
                 if self._section == 'Vertical':
                     variable = 'x'
                 else:
