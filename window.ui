@@ -6,12 +6,24 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>793</width>
+    <width>805</width>
     <height>615</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>805</width>
+    <height>610</height>
+   </size>
+  </property>
   <property name="windowTitle">
    <string>MainWindow</string>
+  </property>
+  <property name="toolTip">
+   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select any result field to view it in 2D mode&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+  </property>
+  <property name="toolTipDuration">
+   <number>2</number>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QGroupBox" name="groupBox_operators">
@@ -19,9 +31,12 @@
      <rect>
       <x>10</x>
       <y>30</y>
-      <width>161</width>
+      <width>171</width>
       <height>321</height>
      </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::TabFocus</enum>
     </property>
     <property name="title">
      <string>Operators</string>
@@ -31,9 +46,12 @@
       <rect>
        <x>10</x>
        <y>20</y>
-       <width>131</width>
+       <width>151</width>
        <height>291</height>
       </rect>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::WheelFocus</enum>
      </property>
      <property name="layoutDirection">
       <enum>Qt::LeftToRight</enum>
@@ -53,12 +71,12 @@
         <rect>
          <x>10</x>
          <y>20</y>
-         <width>61</width>
+         <width>71</width>
          <height>19</height>
         </rect>
        </property>
        <property name="text">
-        <string>Add</string>
+        <string>Add ( + )</string>
        </property>
       </widget>
       <widget class="QRadioButton" name="radioButton_substract">
@@ -66,12 +84,12 @@
         <rect>
          <x>10</x>
          <y>50</y>
-         <width>81</width>
-         <height>19</height>
+         <width>101</width>
+         <height>20</height>
         </rect>
        </property>
        <property name="text">
-        <string>substract</string>
+        <string>substract ( - )</string>
        </property>
       </widget>
       <widget class="QRadioButton" name="radioButton_multiply">
@@ -79,12 +97,12 @@
         <rect>
          <x>10</x>
          <y>80</y>
-         <width>71</width>
+         <width>91</width>
          <height>19</height>
         </rect>
        </property>
        <property name="text">
-        <string>Multiply</string>
+        <string>Multiply ( * )</string>
        </property>
       </widget>
       <widget class="QRadioButton" name="radioButton_divide">
@@ -92,12 +110,25 @@
         <rect>
          <x>10</x>
          <y>110</y>
-         <width>61</width>
+         <width>81</width>
          <height>19</height>
         </rect>
        </property>
        <property name="text">
-        <string>Divide</string>
+        <string>Divide ( / )</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_pow">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>140</y>
+         <width>111</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Pow ( ** )</string>
        </property>
       </widget>
      </widget>
@@ -115,7 +146,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Composition</string>
+        <string>Composition </string>
        </property>
       </widget>
       <widget class="QRadioButton" name="radioButton_subs">
@@ -181,9 +212,9 @@
    <widget class="QGroupBox" name="groupBox_appfunc">
     <property name="geometry">
      <rect>
-      <x>180</x>
+      <x>190</x>
       <y>30</y>
-      <width>591</width>
+      <width>611</width>
       <height>321</height>
      </rect>
     </property>
@@ -195,7 +226,7 @@
       <rect>
        <x>10</x>
        <y>20</y>
-       <width>451</width>
+       <width>471</width>
        <height>291</height>
       </rect>
      </property>
@@ -287,7 +318,7 @@
     <widget class="QPushButton" name="pushButton_delete_row">
      <property name="geometry">
       <rect>
-       <x>470</x>
+       <x>490</x>
        <y>60</y>
        <width>111</width>
        <height>31</height>
@@ -306,7 +337,7 @@
     <widget class="QPushButton" name="pushButton_delete_column">
      <property name="geometry">
       <rect>
-       <x>470</x>
+       <x>490</x>
        <y>100</y>
        <width>111</width>
        <height>31</height>
@@ -325,7 +356,7 @@
     <widget class="QPushButton" name="pushButton_delete_cell">
      <property name="geometry">
       <rect>
-       <x>470</x>
+       <x>490</x>
        <y>140</y>
        <width>111</width>
        <height>31</height>
@@ -341,7 +372,7 @@
     <widget class="QPushButton" name="pushButton_create">
      <property name="geometry">
       <rect>
-       <x>470</x>
+       <x>490</x>
        <y>180</y>
        <width>111</width>
        <height>31</height>
@@ -354,7 +385,7 @@
     <widget class="QPushButton" name="pushButton_2d">
      <property name="geometry">
       <rect>
-       <x>470</x>
+       <x>490</x>
        <y>20</y>
        <width>111</width>
        <height>31</height>
@@ -362,6 +393,12 @@
      </property>
      <property name="cursor">
       <cursorShape>OpenHandCursor</cursorShape>
+     </property>
+     <property name="toolTipDuration">
+      <number>-1</number>
+     </property>
+     <property name="statusTip">
+      <string/>
      </property>
      <property name="text">
       <string>2D view of cell</string>
@@ -373,7 +410,7 @@
      <rect>
       <x>10</x>
       <y>350</y>
-      <width>761</width>
+      <width>791</width>
       <height>221</height>
      </rect>
     </property>
@@ -385,7 +422,7 @@
       <rect>
        <x>10</x>
        <y>20</y>
-       <width>621</width>
+       <width>641</width>
        <height>192</height>
       </rect>
      </property>
@@ -420,8 +457,8 @@
     <widget class="QPushButton" name="pushButton_del_inter_cell">
      <property name="geometry">
       <rect>
-       <x>640</x>
-       <y>20</y>
+       <x>660</x>
+       <y>17</y>
        <width>111</width>
        <height>31</height>
       </rect>
@@ -433,8 +470,8 @@
     <widget class="QPushButton" name="pushButton_clear_inter_cell">
      <property name="geometry">
       <rect>
-       <x>640</x>
-       <y>60</y>
+       <x>660</x>
+       <y>57</y>
        <width>111</width>
        <height>31</height>
       </rect>
@@ -446,8 +483,8 @@
     <widget class="QPushButton" name="pushButton_export_exp">
      <property name="geometry">
       <rect>
-       <x>640</x>
-       <y>113</y>
+       <x>660</x>
+       <y>100</y>
        <width>111</width>
        <height>31</height>
       </rect>
@@ -463,7 +500,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>793</width>
+     <width>805</width>
      <height>19</height>
     </rect>
    </property>

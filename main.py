@@ -309,6 +309,8 @@ class OpExpGen(QMainWindow):
             item = arithmetic.multiply(text_from, text_into)
         elif self.ui.radioButton_divide.isChecked():
             item = arithmetic.divide(text_from, text_into)
+        elif self.ui.radioButton_pow.isChecked():
+            item = arithmetic.pow(text_from, text_into)
         elif self.ui.radioButton_subs.isChecked():
             # This pop-up another dialog and checks which checkbox has been checked
             # It first sets the text in the dialog i.e. the two functions
@@ -378,9 +380,8 @@ class OpExpGen(QMainWindow):
                 (int(self.create_func_const_dialog.ui.lineEdit_2.text()) > 0):
             self.msg.setText("A Constant cannot have an argument")
             self.msg.exec_()
-        elif self.create_func_const_dialog.ui.comboBox_1.currentText() == 'Function' and \
-                (self.create_func_const_dialog.ui.lineEdit_2.text() == '0'):
-            self.msg.setText("A Function must have an argument")
+        elif int(self.create_func_const_dialog.ui.lineEdit_2.text()) < 0:
+            self.msg.setText("A Function/Constant cannot have a negative argument")
             self.msg.exec_()
 
         else:
@@ -518,9 +519,9 @@ class OpExpGen(QMainWindow):
                           "Software Version: 1.0\n\n"
                           "Author: Molinge Lyonga Jr\n\n"
                           "Description: This is a simple application of functions.\n"
-                          "It generates Operators and Expressions\n"
-                          "It was built using python3.5, Qt5 designer and PyQt5\n\n"
-                          "It is built for academic, personal and \ncommercial purposes.")
+                          "It generates Operators and Expressions.\n"
+                          "It was built using python3.5, PyQt5 binding, and \nQt5 designer.\n\n"
+                          "It is built for academic, personal and commercial \nusages.")
 
     @staticmethod
     def manual():

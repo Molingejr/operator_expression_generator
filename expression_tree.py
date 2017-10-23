@@ -20,7 +20,7 @@ class ArithmeticExpressionTree(LinkedBinaryTree):
             raise TypeError('Token must be a string')
         self._add_root(token)                     # use inherited, nonpublic method
         if left is not None:                      # presumably three-parameter form
-            if token not in '+-*x/,':
+            if token not in '+-*x/,^':
                 raise ValueError('token must be valid operator')
             self._attach(self.root(), left, right)  # use inherited, nonpublic method
 
@@ -61,8 +61,10 @@ class ArithmeticExpressionTree(LinkedBinaryTree):
                 return left_val / right_val
             elif op == ',':
                 return '{},{}'.format(left_val, right_val)
-            else:                          # treat 'x' or '*' as multiplication
+            elif op == '*':                          # treat 'x' or '*' as multiplication
                 return left_val * right_val
+            elif op == '^':
+                return left_val ** right_val
 
 
 def tokenize(raw):
@@ -71,7 +73,7 @@ def tokenize(raw):
     For example the string '(43-(3*10))' results in the list
     ['(', '43', '-', '(', '3', '*', '10', ')', ')']
     """
-    SYMBOLS = set('+-x*/(), ')    # allow for '*' or 'x' for multiplication
+    SYMBOLS = set('+-x*/^(), ')    # allow for '*' or 'x' for multiplication
 
     mark = 0
     tokens = []
@@ -96,7 +98,7 @@ def build_expression_tree(tokens):
     """
     S = []                                            # we use Python list as stack
     for t in tokens:
-        if t in '+-x*/':                              # t is an operator symbol
+        if t in '+-x*/^':                              # t is an operator symbol
             S.append(t)                               # push the operator symbol
         elif t not in '()':                           # consider t to be a literal
             S.append(ArithmeticExpressionTree(t))     # push trivial tree storing value
@@ -138,7 +140,10 @@ def convert_expression(exp):
     patt2 = re.compile('((\w+\(([x y]\d*,*)+\))*,*)')
 
     # This is to match patterns like g(f(x1,x2),y2)
-    regex = re.compile('\w+\(({}|{})+\)'.format(patt1.pattern, patt2.pattern))
+    regex1 = re.compile('\w+\(({}|{})+\)'.format(patt1.pattern, patt2.pattern))
+
+    # This is to match the power operator **
+    regex2 = re.compile(r'\*\*')
 
     new_exp = exp      # Keep a copy of exp for processing
     replacements = dict()   # A dictionary containing the replacements done
@@ -146,12 +151,22 @@ def convert_expression(exp):
     # This fragment locate function pattern in an expression and replaces them with
     # function's name
     # It also stores the replacements done in the replacements dictionary
-    for match in re.finditer(regex, exp):
+    for match in re.finditer(regex1, exp):
         s = match.start()
         e = match.end()
         f_name = exp[s:e].split('(')[0]  # splits by '(', the function and takes only its name
         new_exp = new_exp.replace(exp[s:e], f_name)
         replacements[exp[s]] = exp[s:e]
+
+    new_exp2 = new_exp
+    for match in re.finditer(regex2, new_exp):
+        s = match.start()
+        e = match.end()
+        new_exp2 = new_exp2.replace(new_exp[s:e], '^')
+        replacements['^'] = new_exp[s:e]
+
+    if re.search(regex2, new_exp):
+        new_exp = new_exp2
 
     return new_exp, replacements
 
@@ -181,7 +196,7 @@ def expression_formats(exp, order):
         for c in exp_tree.postorder():
             new_exp += c.element()
 
-    # replace the function's name with the function itselft
+    # replace the function's name with the function it self
     for k in repl.keys():
         new_exp = new_exp.replace(k, repl[k])
 
@@ -197,6 +212,6 @@ if __name__ == '__main__':
     for i in big.inorder():
         print(i.element())
     """
-    exp = '(f(g(x1,x2),y2)+(a-b))'
+    exp = '(f(g(x1,x2),y2)+(a**(a-b)))'
     # print(convert_expression(exp))
     print(expression_formats(exp, 'postorder'))

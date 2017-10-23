@@ -25,6 +25,10 @@ class Arithmetic:
     def divide(func1, func2):
         return '(' + func1 + '/' + func2 + ')'
 
+    @staticmethod
+    def pow(func1, func2):
+        return '(' + func1 + '**' + func2 + ')'
+
 
 class Algebraic:
     """
@@ -89,7 +93,7 @@ class Operators:
     def __init__(self):
         """Constructor initializes our list of operators and the chosen operator"""
         self._operators = {
-            "Arithmetic": ['Add', 'Subtract', 'Multiply', 'Divide'],
+            "Arithmetic": ['Add', 'Subtract', 'Multiply', 'Divide', 'pow'],
             "Algebraic": ['Compose', 'Substitute'],
             "Trigonometric": ['cos', 'sin', 'tan']
         }
