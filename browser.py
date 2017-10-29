@@ -6,8 +6,8 @@ It contains classes responsible for managing and displaying the browser.
 
 from PyQt5.QtCore import QUrl
 from PyQt5.QtWidgets import QApplication, QWidget 
-from PyQt5.QtWebKitWidgets import QWebView, QWebPage
-from PyQt5.QtWebKit import QWebSettings
+from PyQt5.QtWebKitWidgets import QWebView, QWebPage  # This module has been deprecated
+from PyQt5.QtWebKit import QWebSettings     # This module has been deprecated
 from PyQt5.QtNetwork import *
 import sys
 import os

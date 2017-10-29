@@ -158,6 +158,7 @@ def convert_expression(exp):
         new_exp = new_exp.replace(exp[s:e], f_name)
         replacements[exp[s]] = exp[s:e]
 
+    # This is to handle the power operator
     new_exp2 = new_exp
     for match in re.finditer(regex2, new_exp):
         s = match.start()

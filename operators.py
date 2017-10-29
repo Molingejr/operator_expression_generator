@@ -40,14 +40,14 @@ class Algebraic:
         if func1.find('x1') == -1:
             return None
         if arg is None:
-            return '({0}o{1})'.format(func1, func2)
+            return '({0}∘{1})'.format(func1, func2)
         else:
             regex = re.compile(r'[x y]{}'.format(arg))
             obj = re.search(regex, func2)
             if obj is None:
                 return False
             s = func2[obj.start():obj.end()]
-            return func2.replace(s, '{0}o{1}'.format(func1, s))
+            return func2.replace(s, '{0}∘{1}'.format(func1, s))
 
     @staticmethod
     def substitute(func1, func2, arg=None):

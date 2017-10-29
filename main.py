@@ -10,7 +10,6 @@ the GUI.
 It gives users a high degree of control and manipulation and abstracting the backend
 functions from users.
 """
-import os
 import sys
 from PyQt5.QtWidgets import *
 from PyQt5 import QtCore
@@ -26,10 +25,9 @@ import window
 import ui_dragAt
 import ui_export_expression
 import expression_tree
-import browser
+# import browser
 
 __author__ = 'Molinge'
-
 
 class DragAt(QDialog):
     """
@@ -156,6 +154,7 @@ class OpExpGen(QMainWindow):
         self.ui.pushButton_del_inter_cell.clicked.connect(self.clear_inter_cell)
         self.ui.pushButton_clear_inter_cell.clicked.connect(self.clear_inter_grid)
         self.ui.pushButton_export_exp.clicked.connect(self.export_expression)
+        self.ui.pushButton_meaning.clicked.connect(self.meaning)
 
         # They call associated functions when certain menu actions are triggered
         self.ui.action_New.triggered.connect(self.file_new)
@@ -179,6 +178,15 @@ class OpExpGen(QMainWindow):
         self.restoreState(settings.value("OpExpGen/State", QByteArray()))
         QTimer.singleShot(0, self.load_initial_file)
         self.setWindowTitle("Operator and Expression Generation")
+
+    @staticmethod
+    def meaning():
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setWindowTitle("Semantics of Symbols")
+        msg.setText("This allows the User to add meaning to Symbols like \nfunction/constant."
+                    "\n\nThis Feature has not yet been implemented.\n")
+        msg.exec_()
 
     def closeEvent(self, event):
         """This function handles when a user clicks the exit button"""

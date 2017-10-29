@@ -56,13 +56,18 @@ class Ui_Dialog_create_fc(object):
         self.lineEdit_2.setInputMethodHints(QtCore.Qt.ImhNone)
         self.lineEdit_2.setObjectName("lineEdit_2")
         self.formLayout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.lineEdit_2)
+        self.label_display_process = QtWidgets.QLabel(self.groupBox_createfunconst)
+        self.label_display_process.setGeometry(QtCore.QRect(20, 185, 211, 21))
+        self.label_display_process.setText("")
+        self.label_display_process.setObjectName("label_display_process")
 
         self.retranslateUi(Dialog_create_fc)
+        self.pushButton_save.clicked.connect(Dialog_create_fc.exec)
         QtCore.QMetaObject.connectSlotsByName(Dialog_create_fc)
 
     def retranslateUi(self, Dialog_create_fc):
         _translate = QtCore.QCoreApplication.translate
-        Dialog_create_fc.setWindowTitle(_translate("Dialog_create_fc", "Dialog"))
+        Dialog_create_fc.setWindowTitle(_translate("Dialog_create_fc", "Creation of Function/Constants"))
         self.groupBox_createfunconst.setTitle(_translate("Dialog_create_fc", "Create Function/Constant"))
         self.label_2.setText(_translate("Dialog_create_fc", "Type"))
         self.comboBox_1.setItemText(0, _translate("Dialog_create_fc", "Constant"))

@@ -16,6 +16,7 @@ class Ui_Dialog_2D(object):
         Dialog_2D.resize(400, 230)
         Dialog_2D.setMinimumSize(QtCore.QSize(400, 220))
         Dialog_2D.setSizeIncrement(QtCore.QSize(0, 0))
+        Dialog_2D.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
         Dialog_2D.setAcceptDrops(False)
         Dialog_2D.setSizeGripEnabled(False)
         Dialog_2D.setModal(False)
@@ -44,7 +45,7 @@ class Ui_Dialog_2D(object):
 
     def retranslateUi(self, Dialog_2D):
         _translate = QtCore.QCoreApplication.translate
-        Dialog_2D.setWindowTitle(_translate("Dialog_2D", "Dialog"))
+        Dialog_2D.setWindowTitle(_translate("Dialog_2D", "2D View of Grid Cell"))
         self.pushButton_del_row.setText(_translate("Dialog_2D", "Delete row"))
         self.pushButton_save_changes.setText(_translate("Dialog_2D", "Save Changes"))
         self.pushButton_cancel.setText(_translate("Dialog_2D", "Cancel"))
