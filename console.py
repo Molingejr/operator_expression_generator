@@ -34,6 +34,9 @@ class Console:
         ops = ['', 'add', 'subtract', 'multiply', 'divide', 'substitute', 'compose', 'cos', 'sin', 'tan']
         operator = ops[1]   # default operator
 
+        print("*********************************\n"
+              "OPERATOR AND EXPRESSION GENERATOR\n"
+              "*********************************\n")
         choice = self.menu()
         while choice != 6:
             if choice == 1:
