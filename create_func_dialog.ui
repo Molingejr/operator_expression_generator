@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Creation of Function/Constants</string>
+   <string>Creation of Function</string>
   </property>
   <widget class="QGroupBox" name="groupBox_createfunconst">
    <property name="geometry">
@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="title">
-    <string>Create Function/Constant</string>
+    <string>Create Function</string>
    </property>
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">

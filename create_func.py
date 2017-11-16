@@ -8,7 +8,7 @@ on the GUI or Text application.
 __author__ = 'Molinge'
 
 
-class CreateFuncConst:
+class CreateFunc:
     """
     This class provides methods for collecting data about a function and settings it's attributes.
     It then provides a method that takes this data and create a function as a string
@@ -35,7 +35,7 @@ class CreateFuncConst:
     def set_args(self, args):
         if (not isinstance(args, int)) or (args < 0):
             print("Argument is either not an integer or less than 0.")
-            print("Only integers > 0 are accepted")
+            print("Only integers >= 0 are accepted")
             return
         self._args = args
 

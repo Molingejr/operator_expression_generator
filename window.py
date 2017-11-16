@@ -5,10 +5,13 @@
 # Created by: PyQt5 UI code generator 5.6
 #
 # WARNING! All changes made in this file will be lost!
+#
+#  I have made some changes to this file. Take note when recreating this file.
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from application_table import Table, LocationException
 from intermediate_table import InterTable
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -274,7 +277,7 @@ class Ui_MainWindow(object):
         self.pushButton_delete_column.setShortcut(_translate("MainWindow", "Ctrl+C"))
         self.pushButton_delete_cell.setText(_translate("MainWindow", "Delete cell"))
         self.pushButton_delete_cell.setShortcut(_translate("MainWindow", "Del"))
-        self.pushButton_create.setText(_translate("MainWindow", "Create Func/Const"))
+        self.pushButton_create.setText(_translate("MainWindow", "Create Function"))
         self.pushButton_2d.setText(_translate("MainWindow", "2D view of cell"))
         self.pushButton_meaning.setToolTip(_translate("MainWindow", "Click Me"))
         self.pushButton_meaning.setText(_translate("MainWindow", "Assign Meaning"))

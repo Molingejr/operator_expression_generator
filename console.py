@@ -8,7 +8,7 @@ It provides some backend methods and also uses other backend methods allowing te
 users a high degree of flexibility and control over the application.
 """
 from operators import *
-from create_func_const import *
+from create_func import *
 from grid import Grid
 from expression_tree import *
 
@@ -39,7 +39,7 @@ class Console:
             if choice == 1:
                 self.app_grid.display_grid()
             elif choice == 2:
-                n = input("Enter function's/constant's name: ")
+                n = input("Enter function's name: ")
                 t = input("Enter it's type(Function/Constant): ")
                 a = int(input("Enter Number of arguments: "))
                 s = input("Enter section: ")
@@ -98,7 +98,7 @@ class Console:
     @staticmethod
     def create_func(func_name, func_type, num_args, section):
         """This method returns an object of a created function."""
-        func = CreateFuncConst()
+        func = CreateFunc()
         func.set_name(func_name)
         func.set_type(func_type)
         func.set_args(num_args)
@@ -140,9 +140,9 @@ class Console:
         print("\nChoose which operation to carryout")
         print("----------------------------------\n")
         print("1. Display Grid")
-        print("2. Create Function/Constant")
+        print("2. Create Function")
         print("3. Choose operator")
-        print("4. Perform calculation")
+        print("4. Perform operation")
         print("5. Export expression ")
         print("6. Exit\n")
         choice = int(input("Enter your choice: "))

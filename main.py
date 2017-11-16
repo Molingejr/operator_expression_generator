@@ -16,9 +16,9 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from operators import *
-import ui_create_func_const_dialog
+import ui_create_func_dialog
 import ui_2D_view
-from create_func_const import CreateFuncConst
+from create_func import CreateFunc
 import grid
 import intermediate
 import window
@@ -28,6 +28,7 @@ import expression_tree
 # import browser
 
 __author__ = 'Molinge'
+
 
 class DragAt(QDialog):
     """
@@ -64,24 +65,24 @@ class TwoDView(QDialog):
         #self.ui.pushButton_del_row(self.del_row())
 
 
-class CreateFuncConstDialog(QDialog):
+class CreateFuncDialog(QDialog):
     """
     This allows the user to create a function which updates the Creation of 
-    Function/Constant palette.
+    Function palette.
     """
     def __init__(self, parent=None):
         """
         Constructor initializes the Dialog using setupUi method from ui_Dialog_create_fc
         class found at the ui_create_func_const_dialog.
         """
-        super(CreateFuncConstDialog, self).__init__(parent)
-        self.ui = ui_create_func_const_dialog.Ui_Dialog_create_fc()
+        super(CreateFuncDialog, self).__init__(parent)
+        self.ui = ui_create_func_dialog.Ui_Dialog_create_fc()
         self.ui.setupUi(self)
         self.ui.lineEdit_2.setValidator(QIntValidator())  # restrict input to Integers
         self.ui.pushButton_clear.clicked.connect(self.default_palette)
 
     def default_palette(self):
-        """ This sets the create function/constant palette to its default"""
+        """ This sets the create function palette to its default"""
         self.ui.lineEdit.clear()
         self.ui.comboBox_1.setCurrentIndex(0)
         self.ui.lineEdit_2.clear()
@@ -133,7 +134,7 @@ class OpExpGen(QMainWindow):
         self.dragAt = DragAt(self)     # This represents a QDialog popup gui to be used in composition and substitution
 
         # This represents our pop-up dialog for creating functions/constants
-        self.create_func_const_dialog = CreateFuncConstDialog(self)
+        self.create_func_const_dialog = CreateFuncDialog(self)
 
         # This represents an object for displaying the cell's intersection in 2d
         self.view_2d_cell = TwoDView(self)
@@ -184,7 +185,7 @@ class OpExpGen(QMainWindow):
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Information)
         msg.setWindowTitle("Semantics of Symbols")
-        msg.setText("This allows the User to add meaning to Symbols like \nfunction/constant."
+        msg.setText("This allows the User to add meaning to Symbols like \nfunction."
                     "\n\nThis Feature has not yet been implemented.\n")
         msg.exec_()
 
@@ -378,30 +379,30 @@ class OpExpGen(QMainWindow):
 
         # This code snipes does the testing and assertions
         if self.create_func_const_dialog.ui.lineEdit.text() == '':
-            self.msg.setText("Function/Constant name cannot be left empty")
+            self.msg.setText("function name cannot be left empty")
             self.msg.exec_()
         if (not self.create_func_const_dialog.ui.lineEdit.text().isalnum()) or \
            (self.create_func_const_dialog.ui.lineEdit.text()[0].isnumeric()):
-            self.msg.setText("Function/Constant name is invalid")
+            self.msg.setText("Function name is invalid")
             self.msg.exec_()
         elif self.create_func_const_dialog.ui.comboBox_1.currentText() == 'Constant' and \
                 (int(self.create_func_const_dialog.ui.lineEdit_2.text()) > 0):
             self.msg.setText("A Constant cannot have an argument")
             self.msg.exec_()
         elif int(self.create_func_const_dialog.ui.lineEdit_2.text()) < 0:
-            self.msg.setText("A Function/Constant cannot have a negative argument")
+            self.msg.setText("A Function cannot have a negative argument")
             self.msg.exec_()
 
         else:
-            # This code segment collects info from the create function/constant palette
+            # This code segment collects info from the create function palette
             func_name = self.create_func_const_dialog.ui.lineEdit.text()
             func_type = self.create_func_const_dialog.ui.comboBox_1.currentText()
             num_args = int(self.create_func_const_dialog.ui.lineEdit_2.text())
             section = self.create_func_const_dialog.ui.comboBox_2.currentText()
 
-            # Here we create an object of CreateFuncConst class and set it's
+            # Here we create an object of CreateFunc class and set it's
             # values to those collected in the above segment.
-            func = CreateFuncConst()
+            func = CreateFunc()
             func.set_name(func_name)
             func.set_type(func_type)
             func.set_args(num_args)
@@ -623,7 +624,7 @@ class OpExpGen(QMainWindow):
         else if it exist already, it just overwrite its contents
         """
         if not self.app_grid.filename():
-            return self.fileSaveAs()
+            return self.file_save_as()
         else:
             ok, msg = self.app_grid.save()
             self.statusBar().showMessage(msg, 5000)
@@ -639,8 +640,8 @@ class OpExpGen(QMainWindow):
                                                "My Grid data files ({})".format(self.app_grid.formats()))
         if filename:
             if '.' not in filename[0]:
-                filename = filename[0] + ".mpb"
-            ok, msg = self.app_grid.save(filename)
+                filename = filename[0] + ".mpb", filename[1]
+            ok, msg = self.app_grid.save(filename[0])
             self.statusBar().showMessage(msg, 5000)
             return ok
         return False

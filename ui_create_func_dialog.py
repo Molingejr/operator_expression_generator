@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'create_func_const_dialog.ui'
+# Form implementation generated from reading ui file 'create_func_dialog.ui'
 #
 # Created by: PyQt5 UI code generator 5.6
 #
@@ -67,8 +67,8 @@ class Ui_Dialog_create_fc(object):
 
     def retranslateUi(self, Dialog_create_fc):
         _translate = QtCore.QCoreApplication.translate
-        Dialog_create_fc.setWindowTitle(_translate("Dialog_create_fc", "Creation of Function/Constants"))
-        self.groupBox_createfunconst.setTitle(_translate("Dialog_create_fc", "Create Function/Constant"))
+        Dialog_create_fc.setWindowTitle(_translate("Dialog_create_fc", "Creation of Function"))
+        self.groupBox_createfunconst.setTitle(_translate("Dialog_create_fc", "Create Function"))
         self.label_2.setText(_translate("Dialog_create_fc", "Type"))
         self.comboBox_1.setItemText(0, _translate("Dialog_create_fc", "Constant"))
         self.comboBox_1.setItemText(1, _translate("Dialog_create_fc", "Function"))

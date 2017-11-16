@@ -379,7 +379,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>Create Func/Const</string>
+      <string>Create Function</string>
      </property>
     </widget>
     <widget class="QPushButton" name="pushButton_2d">
