@@ -6,9 +6,9 @@ setup(
 
     # This automatically detects the packages in the specified
     # (or current directory if no directory is given).
-    packages=find_packages(exclude=['docs']),
+    packages=find_packages(exclude=['help']),
 
-    license='',
+    license="",
 
     # All of the following fields are PyPI metadata fields.
     # When registering a package at PyPI this is used as
@@ -32,6 +32,7 @@ setup(
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: Implementation :: PyPy',
 
     ]
