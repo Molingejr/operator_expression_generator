@@ -11,6 +11,7 @@ It gives users a high degree of control and manipulation and abstracting the bac
 functions from users.
 """
 import sys
+
 from PyQt5.QtWidgets import *
 from PyQt5 import QtCore
 from PyQt5.QtCore import *
@@ -25,7 +26,7 @@ import window
 import ui_dragAt
 import ui_export_expression
 import expression_tree
-# import browser
+#import webbrowser
 
 __author__ = 'Molinge'
 
@@ -535,6 +536,7 @@ class OpExpGen(QMainWindow):
     @staticmethod
     def manual():
         """This is to display the user manual in the browser module"""
+        #webbrowser.open('./help/User Manual.docx')
         pass
 
     def update_table(self):
