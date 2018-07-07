@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="IdProvider" IDEtalkID="D9403C40AFC6AC6BF35E4A187AE56E12" />
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.6 (operator_expression_generators)" project-jdk-type="Python SDK" />
+  <component name="JavaScriptSettings">
+    <option name="languageLevel" value="ES6" />
+  </component>
 </project>
