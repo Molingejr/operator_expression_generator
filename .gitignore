@@ -1,10 +1,15 @@
 # Created by .ignore support plugin (hsz.mobi)
 
 # ignore all compiled files
-*.pyc
+__pycache__
 
 # ignore all files in .idea directory
-.idea/
+.idea
 
 # ignore all .xml files
 *.xml
+
+# ignore our binary file
+*.mpb
+
+venv
