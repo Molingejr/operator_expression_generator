@@ -2,8 +2,6 @@
 
 import re
 
-__author__ = 'Molinge'
-
 
 class Arithmetic:
     """

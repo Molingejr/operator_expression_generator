@@ -5,8 +5,6 @@ This module contains classes responsible for creating functions and constants
 on the GUI or Text application.
 """
 
-__author__ = 'Molinge'
-
 
 class CreateFunc:
     """

@@ -10,9 +10,7 @@ users a high degree of flexibility and control over the application.
 from operators import *
 from create_func import *
 from grid import Grid
-from expression_tree import *
-
-__author__ = 'Molinge'
+from trees.expression_tree import *
 
 
 class Console:

@@ -2,8 +2,6 @@
 
 from PyQt5.QtWidgets import *
 
-__author__ = 'Molinge'
-
 
 class InterTable(QTableWidget):
     """
@@ -16,7 +14,7 @@ class InterTable(QTableWidget):
         super(InterTable, self).__init__(parent)
         self.text_into = ''
         self.text_from = ''
-        # used to store two important rows used in setting our outputs in result table
+        # used to store two important rows used in setting our outputs in result tables
         self.list = []
         self.msg = QMessageBox()
 

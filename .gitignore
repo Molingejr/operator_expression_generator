@@ -13,3 +13,11 @@ __pycache__
 *.mpb
 
 venv
+
+# ignore compiled ui files
+ui_files/resources_rc.py
+ui_files/ui_2d_view.py
+ui_files/ui_create_func_dialog.py
+ui_files/ui_drag_at.py
+ui_files/ui_export_expression_dialog.py
+ui_files/ui_window.py

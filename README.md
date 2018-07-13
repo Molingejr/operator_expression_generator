@@ -35,12 +35,23 @@ Once you've created a virtual environment, you may activate it.
 #### Install requirements
 `$ pip3 install -r requirements.txt` 
 
+#### Compile Qt files to .py
+```
+$ cd ui_files
+$ pyuic5 2d_view.ui -o ui_2d_view.py
+$ pyuic5 create_func_dialog.ui -o ui_create_func_dialog.py
+$ pyuic5 drag_at.ui -o ui_drag_at.py
+$ pyuic5 export_expression_dialog.ui -o ui_export_expression_dialog.py
+$ pyuic5 window.ui -o ui_window.py
+$ pyrcc5 resources.qrc -o resources_rc.py
+```
+
 #### How to run software
 * GUI mode `$ python main.py`
 * Console mode `$ python console.py`
 
 #### How to generate standalone application
-**Standalone executables** can be generated using **PyInstaller** package as follows:
+Standalone executables can be generated using PyInstaller package as follows:
 ```
 $ pip install pyinstaller
 $ pyinstaller  --window main.py

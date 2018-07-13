@@ -17,18 +17,18 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from operators import *
-import ui_create_func_dialog
-import ui_2D_view
 from create_func import CreateFunc
 import grid
 import intermediate
-import window
-import ui_dragAt
-import ui_export_expression
-import expression_tree
-#import webbrowser
+from ui_files import ui_window
+from ui_files import ui_create_func_dialog
+from ui_files import ui_2d_view
+from ui_files import ui_drag_at
+from ui_files import ui_export_expression_dialog
+from trees import expression_tree
 
-__author__ = 'Molinge'
+
+#import webbrowser
 
 
 class DragAt(QDialog):
@@ -42,7 +42,7 @@ class DragAt(QDialog):
         class found in ui_dragAt module.
         """
         super(DragAt, self).__init__(parent)
-        self.ui = ui_dragAt.Ui_Dialog()
+        self.ui = ui_drag_at.Ui_Dialog()
         self.ui.setupUi(self)
         self.ui.lineEdit_2.setText(text_from)
         self.ui.lineEdit.setText(text_into)
@@ -61,7 +61,7 @@ class TwoDView(QDialog):
         found at the ui_2D_view module.
         """
         super(TwoDView, self).__init__(parent)
-        self.ui = ui_2D_view.Ui_Dialog_2D()
+        self.ui = ui_2d_view.Ui_Dialog_2D()
         self.ui.setupUi(self)
         #self.ui.pushButton_del_row(self.del_row())
 
@@ -97,7 +97,7 @@ class ExportExpressionDialog(QDialog):
     """
     def __init__(self, parent=None):
         super(ExportExpressionDialog, self).__init__(parent)
-        self.ui = ui_export_expression.Ui_Dialog()
+        self.ui = ui_export_expression_dialog.Ui_Dialog()
         self.ui.setupUi(self)
         # self.ui.pushButton_cancel.clicked.connect()
 
@@ -116,7 +116,7 @@ class OpExpGen(QMainWindow):
         """
         # QWidget.__init__(self, parent)
         super(OpExpGen, self).__init__(parent)
-        self.ui = window.Ui_MainWindow()
+        self.ui = ui_window.Ui_MainWindow()
         self.ui.setupUi(self)
         self.setWindowIcon(QIcon(':/icon.png'))
         self.center()
@@ -167,7 +167,7 @@ class OpExpGen(QMainWindow):
         self.ui.actionAbout_Software.triggered.connect(self.about)
         self.ui.action_User_Manual.triggered.connect(self.manual)
 
-        # This enables the event filter at the application function and intermediate result table
+        # This enables the event filter at the application function and intermediate result tables
         self.ui.tableWidget_func.viewport().installEventFilter(self)
         self.ui.tableWidget_inter.viewport().installEventFilter(self)
 
@@ -253,7 +253,7 @@ class OpExpGen(QMainWindow):
 
         # This handles when a drop action is performed on a intersection layer of outputs
         # on the grid
-        except window.LocationException:
+        except ui_window.LocationException:
             self.msg.setText("Cannot drop there")
             self.msg.exec_()
             return True
@@ -360,13 +360,13 @@ class OpExpGen(QMainWindow):
         if item is None:
             return False
         if table is self.ui.tableWidget_func:
-            # This does the storing of the expression in the output table
+            # This does the storing of the expression in the output tables
             self.app_grid.add_item(item, text_from_pos[0], text_into_pos[1])
             self.update_table()
             self.inter_grid.add_data(item)
             self.update_inter_table()
         elif table is self.ui.tableWidget_inter:
-            # This does the storing of the expression in the intermediate table
+            # This does the storing of the expression in the intermediate tables
             self.inter_grid.set_data(item, text_into_pos[0], text_into_pos[1])
             self.update_inter_table()
 
@@ -375,7 +375,7 @@ class OpExpGen(QMainWindow):
             This function is called when the pushButton_save is clicked.
             It does some testing ensuring that all the fields in the save pallet
             are filled and in it's right combination.
-            It then updates the output table and the available function table
+            It then updates the output tables and the available function tables
         """
 
         # This code snipes does the testing and assertions
@@ -426,7 +426,7 @@ class OpExpGen(QMainWindow):
 
             self.defined_functions[func_name] = [func_type, num_args, section]  # update dictionary
 
-            # This code snipe saves the function name in the application of functions/constant table and appends
+            # This code snipe saves the function name in the application of functions/constant tables and appends
             # its number of argument in a string form to let the user know the amount of arguments
             # It checks and ensures each function or constant is saved in their respective row or column
             if self.defined_functions[func_name][2] == 'Vertical':

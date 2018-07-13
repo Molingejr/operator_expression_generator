@@ -1,4 +1,4 @@
-# file name: tree.py
+# file name: trees.py
 # contains all our data structures needed to be used by the ExpressionTree
 # data structure
 
@@ -70,13 +70,13 @@ class LinkedQueue:
 
 
 class Tree:
-    """Abstract base class representing a tree structure."""
+    """Abstract base class representing a trees structure."""
 
     # ------------------------------- nested Position class -------------------------------
     class Position:
-        """An abstraction representing the location of a single element within a tree.
+        """An abstraction representing the location of a single element within a trees.
     
-        Note that two position instaces may represent the same inherent location in a tree.
+        Note that two position instaces may represent the same inherent location in a trees.
         Therefore, users should always rely on syntax 'p == q' rather than 'p is q' when testing
         equivalence of positions.
         """
@@ -95,7 +95,7 @@ class Tree:
 
     # ---------- abstract methods that concrete subclass must support ----------
     def root(self):
-        """Return Position representing the tree's root (or None if empty)."""
+        """Return Position representing the trees's root (or None if empty)."""
         raise NotImplementedError('must be implemented by subclass')
 
     def parent(self, p):
@@ -111,12 +111,12 @@ class Tree:
         raise NotImplementedError('must be implemented by subclass')
 
     def __len__(self):
-        """Return the total number of elements in the tree."""
+        """Return the total number of elements in the trees."""
         raise NotImplementedError('must be implemented by subclass')
 
     # ---------- concrete methods implemented in this class ----------
     def is_root(self, p):
-        """Return True if Position p represents the root of the tree."""
+        """Return True if Position p represents the root of the trees."""
         return self.root() == p
 
     def is_leaf(self, p):
@@ -124,7 +124,7 @@ class Tree:
         return self.num_children(p) == 0
 
     def is_empty(self):
-        """Return True if the tree is empty."""
+        """Return True if the trees is empty."""
         return len(self) == 0
 
     def depth(self, p):
@@ -135,7 +135,7 @@ class Tree:
             return 1 + self.depth(self.parent(p))
 
     def _height1(self):  # works, but O(n^2) worst-case time
-        """Return the height of the tree."""
+        """Return the height of the trees."""
         return max(self.depth(p) for p in self.positions() if self.is_leaf(p))
 
     def _height2(self, p):  # time is linear in size of subtree
@@ -148,23 +148,23 @@ class Tree:
     def height(self, p=None):
         """Return the height of the subtree rooted at Position p.
     
-        If p is None, return the height of the entire tree.
+        If p is None, return the height of the entire trees.
         """
         if p is None:
             p = self.root()
         return self._height2(p)  # start _height2 recursion
 
     def __iter__(self):
-        """Generate an iteration of the tree's elements."""
+        """Generate an iteration of the trees's elements."""
         for p in self.positions():  # use same order as positions()
             yield p.element()  # but yield each element
 
     def positions(self):
-        """Generate an iteration of the tree's positions."""
+        """Generate an iteration of the trees's positions."""
         return self.preorder()  # return entire preorder iteration
 
     def preorder(self):
-        """Generate a preorder iteration of positions in the tree."""
+        """Generate a preorder iteration of positions in the trees."""
         if not self.is_empty():
             for p in self._subtree_preorder(self.root()):  # start recursion
                 yield p
@@ -177,7 +177,7 @@ class Tree:
                 yield other  # yielding each to our caller
 
     def postorder(self):
-        """Generate a postorder iteration of positions in the tree."""
+        """Generate a postorder iteration of positions in the trees."""
         if not self.is_empty():
             for p in self._subtree_postorder(self.root()):  # start recursion
                 yield p
@@ -190,7 +190,7 @@ class Tree:
         yield p  # visit p after its subtrees
 
     def breadthfirst(self):
-        """Generate a breadth-first iteration of the positions of the tree."""
+        """Generate a breadth-first iteration of the positions of the trees."""
         if not self.is_empty():
             fringe = LinkedQueue()  # known positions not yet yielded
             fringe.enqueue(self.root())  # starting with the root
@@ -203,7 +203,7 @@ class Tree:
 
 class BinaryTree(Tree):
 
-    """Abstract base class representing a binary tree structure."""
+    """Abstract base class representing a binary trees structure."""
 
     # --------------------- additional abstract methods ---------------------
     def left(self, p):
@@ -240,7 +240,7 @@ class BinaryTree(Tree):
             yield self.right(p)
 
     def inorder(self):
-        """Generate an inorder iteration of positions in the tree."""
+        """Generate an inorder iteration of positions in the trees."""
         if not self.is_empty():
             for p in self._subtree_inorder(self.root()):
                 yield p
@@ -257,12 +257,12 @@ class BinaryTree(Tree):
 
     # override inherited version to make inorder the default
     def positions(self):
-        """Generate an iteration of the tree's positions."""
+        """Generate an iteration of the trees's positions."""
         return self.inorder()                 # make inorder the default
 
 
 class LinkedBinaryTree(BinaryTree):
-    """Linked representation of a binary tree structure."""
+    """Linked representation of a binary trees structure."""
 
     class _Node:            # Lightweight, nonpublic class for storing a node
         __slots__ = '_element', '_parent', '_left', '_right'
@@ -304,21 +304,21 @@ class LinkedBinaryTree(BinaryTree):
         """Return Position instance for given node (or None if no node)."""
         return self.Position(self, node) if node is not None else None
 
-    # -------------------------- binary tree constructor --------------------------
+    # -------------------------- binary trees constructor --------------------------
 
     def __init__(self):
-        """Create an initially empty binary tree."""
+        """Create an initially empty binary trees."""
         self._root = None
         self._size = 0
 
     # -------------------------- public accessors --------------------------
 
     def __len__(self):
-        """Return the total number of elements in the tree."""
+        """Return the total number of elements in the trees."""
         return self._size
 
     def root(self):
-        """Return the root Position of the tree (or None if tree is empty)."""
+        """Return the root Position of the trees (or None if trees is empty)."""
         return self._make_position(self._root)
 
     def parent(self, p):
@@ -349,9 +349,9 @@ class LinkedBinaryTree(BinaryTree):
     # -------------------------- nonpublic mutators --------------------------
 
     def _add_root(self, e):
-        """Place element e at the root of an empty tree and return new Position.
+        """Place element e at the root of an empty trees and return new Position.
 
-        Raise ValueError if tree nonempty.
+        Raise ValueError if trees nonempty.
         """
         if self._root is not None:
             raise ValueError('Root exists')
@@ -420,7 +420,7 @@ class LinkedBinaryTree(BinaryTree):
         """Attach trees t1 and t2, respectively, as the left and right subtrees of the external Position p.
 
         As a side effect, set t1 and t2 to empty.
-        Raise TypeError if trees t1 and t2 do not match type of this tree.
+        Raise TypeError if trees t1 and t2 do not match type of this trees.
         Raise ValueError if Position p is invalid or not external.
         """
         node = self._validate(p)

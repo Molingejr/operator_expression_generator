@@ -1,15 +1,15 @@
-from tree import LinkedBinaryTree
+from .tree import LinkedBinaryTree
 import re
 
 
 class ArithmeticExpressionTree(LinkedBinaryTree):
-    """An arithmetic expression tree."""
+    """An arithmetic expression trees."""
 
     def __init__(self, token, left=None, right=None):
-        """Create an expression tree.
+        """Create an expression trees.
     
         In a single parameter form, token should be a leaf value (e.g., '42'),
-        and the expression tree will have that value at an isolated node.
+        and the expression trees will have that value at an isolated node.
     
         In a three-parameter version, token should be an operator,
         and left and right should be existing ArithmeticExpressionTree instances
@@ -101,12 +101,12 @@ def build_expression_tree(tokens):
         if t in '+-x*/^':                              # t is an operator symbol
             S.append(t)                               # push the operator symbol
         elif t not in '()':                           # consider t to be a literal
-            S.append(ArithmeticExpressionTree(t))     # push trivial tree storing value
-        elif t == ')':                                # compose a new tree from three constituent parts
+            S.append(ArithmeticExpressionTree(t))     # push trivial trees storing value
+        elif t == ')':                                # compose a new trees from three constituent parts
             right = S.pop()                           # right subtree as per LIFO
             op = S.pop()                              # operator symbol
             left = S.pop()                            # left subtree
-            S.append(ArithmeticExpressionTree(op, left, right))  # repush tree
+            S.append(ArithmeticExpressionTree(op, left, right))  # repush trees
         # we ignore a left parenthesis
     return S.pop()
 
@@ -177,7 +177,7 @@ def expression_formats(exp, order):
     Takes an expression in an infix order and transform it to another format.
     It first replaces the functions by their name by calling convert_expression function
     which returns new expression and the replacement dictionary.
-    It then build the expression tree by calling the build_expression_tree function.
+    It then build the expression trees by calling the build_expression_tree function.
     It further creates a new expression in the desired format.
     All the function names in this new format are replaced by their original function look
     e.g add replaced with add(x1,x2).

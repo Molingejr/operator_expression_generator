@@ -2,12 +2,13 @@
 
 """
 This module contains classes responsible for controlling what happens on 
-the table(grid) on the GUI. The grid found in the Application of functions/constants
+the tables(grid) on the GUI. The grid found in the Application of functions/constants
 All the events and errors that occurs on that grid are managed by this module.
 """
 
 from PyQt5.QtWidgets import *
 from PyQt5 import QtGui
+
 
 class LocationException(Exception):
     """This exception is raised when a drop action is done at restricted cells"""
@@ -25,7 +26,7 @@ class Table(QTableWidget):
         super(Table, self).__init__(parent)
         self.text_into = ''
         self.text_from = ''
-        # used to store two important rows used in setting our outputs in result table
+        # used to store two important rows used in setting our outputs in result tables
         self.list = []
         self.msg = QMessageBox()
         self.double_cliked_item = []

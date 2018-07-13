@@ -2,16 +2,11 @@
 
 # Form implementation generated from reading ui file 'window.ui'
 #
-# Created by: PyQt5 UI code generator 5.6
+# Created by: PyQt5 UI code generator 5.11.2
 #
 # WARNING! All changes made in this file will be lost!
-#
-#  I have made some changes to this file. Take note when recreating this file.
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from application_table import Table, LocationException
-from intermediate_table import InterTable
-
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -70,24 +65,10 @@ class Ui_MainWindow(object):
         self.radioButton_tan.setGeometry(QtCore.QRect(10, 88, 51, 31))
         self.radioButton_tan.setObjectName("radioButton_tan")
         self.tabWidget_operators.addTab(self.tab_3, "")
-
-        # This adds all our radio buttons into a single button group
-        self.button_group = QtWidgets.QButtonGroup()
-        self.button_group.addButton(self.radioButton_add)
-        self.button_group.addButton(self.radioButton_substract)
-        self.button_group.addButton(self.radioButton_multiply)
-        self.button_group.addButton(self.radioButton_divide)
-        self.button_group.addButton(self.radioButton_comp)
-        self.button_group.addButton(self.radioButton_subs)
-        self.button_group.addButton(self.radioButton_cos)
-        self.button_group.addButton(self.radioButton_sin)
-        self.button_group.addButton(self.radioButton_tan)
-        self.button_group.addButton(self.radioButton_pow)
-
         self.groupBox_appfunc = QtWidgets.QGroupBox(self.centralwidget)
         self.groupBox_appfunc.setGeometry(QtCore.QRect(190, 30, 611, 321))
         self.groupBox_appfunc.setObjectName("groupBox_appfunc")
-        self.tableWidget_func = Table(self.groupBox_appfunc)
+        self.tableWidget_func = QtWidgets.QTableWidget(self.groupBox_appfunc)
         self.tableWidget_func.setGeometry(QtCore.QRect(10, 20, 471, 291))
         self.tableWidget_func.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.tableWidget_func.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
@@ -145,7 +126,7 @@ class Ui_MainWindow(object):
         self.groupBox_interResult = QtWidgets.QGroupBox(self.centralwidget)
         self.groupBox_interResult.setGeometry(QtCore.QRect(10, 350, 791, 221))
         self.groupBox_interResult.setObjectName("groupBox_interResult")
-        self.tableWidget_inter = InterTable(self.groupBox_interResult)
+        self.tableWidget_inter = QtWidgets.QTableWidget(self.groupBox_interResult)
         self.tableWidget_inter.setGeometry(QtCore.QRect(10, 20, 641, 192))
         self.tableWidget_inter.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.tableWidget_inter.setDragEnabled(True)

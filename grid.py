@@ -10,8 +10,6 @@ import pickle
 import gzip
 from PyQt5.QtCore import *
 
-__author__ = 'Molinge'
-
 
 class Grid:
     """

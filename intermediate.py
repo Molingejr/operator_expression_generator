@@ -1,6 +1,5 @@
 # File name: intermediate.py
 # This file contains our intermediate Grid data structure
-__author__ = 'Molinge'
 
 
 class IntermediateGrid:
