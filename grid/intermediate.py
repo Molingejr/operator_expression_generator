@@ -37,11 +37,13 @@ class IntermediateGrid:
                 self._grid[i].append(None)
         return True
 
-    def add_data(self, data):
+    def add_data(self, data: str = None) -> bool:
         """
         This method search for the first ocurance of a column in any row containing
         a None data. It then insert the data parameter into that cell.
         """
+        if data is None:
+            return False
         for i, row in enumerate(self._grid):
             for j, column in enumerate(row):
                 if self._grid[i][j] is None:

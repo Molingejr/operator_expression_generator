@@ -18,9 +18,9 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from operators import *
 from create_func import CreateFunc
-import grid
-import intermediate
-from ui_files import ui_window
+from grid import application, intermediate
+#from ui_files import ui_window
+import main_window
 from ui_files import ui_create_func_dialog
 from ui_files import ui_2d_view
 from ui_files import ui_drag_at
@@ -116,7 +116,7 @@ class OpExpGen(QMainWindow):
         """
         # QWidget.__init__(self, parent)
         super(OpExpGen, self).__init__(parent)
-        self.ui = ui_window.Ui_MainWindow()
+        self.ui = main_window.OPMainWindow()
         self.ui.setupUi(self)
         self.setWindowIcon(QIcon(':/icon.png'))
         self.center()
@@ -126,7 +126,7 @@ class OpExpGen(QMainWindow):
         self.msg.setIcon(QMessageBox.Warning)
         self.msg.setWindowTitle("Invalid Input")
 
-        self.app_grid = grid.Grid()    # This contains our Grid data structure
+        self.app_grid = application.Grid()    # This contains our Grid data structure
         self.inter_grid = intermediate.IntermediateGrid()
         for _ in range(5):
             self.inter_grid.add_row()

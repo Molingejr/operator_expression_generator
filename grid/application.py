@@ -1,4 +1,4 @@
-# File name: grid.py
+# File name: application.py
 # This contains our application of functions Grid data structure
 
 """
@@ -9,6 +9,7 @@ It contains classes that have methods for saving and loading our grid from a spe
 import pickle
 import gzip
 from PyQt5.QtCore import *
+from typing import List, Union
 
 
 class Grid:
@@ -47,10 +48,11 @@ class Grid:
         """
         self._dirty = dirty
 
-    def add_row(self, func):
+    def add_row(self, func: str) -> bool:
         """
         This method adds a row to our grid along with a function at the zeroth position.
         It also validates if the function already exist in the grid
+        row is of type List[str, list]
         """
         if func in self._funNames:
             return False
@@ -65,12 +67,12 @@ class Grid:
             self._dirty = True
             return True
 
-    def add_column(self, func):
+    def add_column(self, func: str = None) -> bool:
         """
         This method adds a column to the grid with the function set at the column in the first row added.
         It also validates if the function already exist
         """
-        if func in self._funNames:
+        if (func in self._funNames) or (func is None) or (func == ''):
             return False
         else:
             if len(self._grid) == 1:
@@ -84,20 +86,22 @@ class Grid:
             self._dirty = True
             return True
 
-    def add_item(self, item, *pos):
+    def add_item(self, item: str = None, *pos) -> bool:
         """
         This adds an item at a given position in the grid
         """
         r, c = pos
-        if (r == 0) or (c == 0):
+        if (r == 0) or (c == 0) or (item is None):
             return False
         else:
             self._grid[r][c].append(item)
         self._dirty = True
         return True
 
-    def get_item(self, *pos):
-        """This method returns a data at a given position(row & column)"""
+    def get_item(self, *pos) -> Union[str, List[str]]:
+        """
+        This method returns a data at a given position(row & column)
+        """
         r, c = pos
         return self._grid[r][c]
 
@@ -110,6 +114,7 @@ class Grid:
             if (r == 0) or (c == 0):
                 return False
             else:
+                print("Item removed")
                 self._grid[r][c].clear()
             self._dirty = True
             return True
@@ -181,9 +186,12 @@ class Grid:
         """This returns the length of our grid. i.e how many rows"""
         return len(self._grid)
 
-    def setFilename(self, filename):
+    def setFilename(self, filename: str = None):
         """This sets the file name"""
-        self._filename = filename
+        if filename is not None:
+            self._filename = filename
+        else:
+            self._filename = ""
 
     def filename(self):
         """This returns the file name"""
@@ -194,24 +202,26 @@ class Grid:
         """This contains the available formats of the file name"""
         return "*.mpb"
 
-    def save(self, filename=""):
+    def save(self, filename: str = None):
         """
         This saves the grid into a file with a given file name.
         It does so by calling the class savePickel method
         """
-        if filename:
+        if (filename is not None) and (filename != ""):
             self._filename = filename
         if self._filename.endswith(".mpb"):
             return self.savePickle()
         return False, "Failed to save: invalid file extension"
 
-    def load(self, filename=""):
+    def load(self, filename: str = None):
         """This loads the grid from the file by calling the loadPickle method"""
-        if filename:
+        if (filename is not None) and (filename != ""):
             self._filename = filename
-        if self._filename.endswith(".mpb"):
-            return self.loadPickle()
-        return False, "Failed to load: invalid file extension"
+            if self._filename.endswith(".mpb"):
+                return self.loadPickle()
+            return False, "Failed to load: invalid file extension"
+
+        return False, "Failed to load: invalid file name"
 
     def savePickle(self):
         """This method does the actual saving of the grid into a file"""
