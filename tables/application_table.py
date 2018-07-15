@@ -74,7 +74,6 @@ class Table(QTableWidget):
             self.double_cliked_item.append(row)
             self.double_cliked_item.append(column)
 
-
     def mouseDoubleClickEvent(self, e: QtGui.QMouseEvent):
         loc = self.indexAt(e.pos())
         self.cellDoubleClicked(loc.row(), loc.column())
